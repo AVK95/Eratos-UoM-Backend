@@ -2,4 +2,5 @@
 Contents:
 <ul>
   <li> Backend project requirements (Aditya) </li>
+  <li> User story (Kelvin) </li>
 </ul>
