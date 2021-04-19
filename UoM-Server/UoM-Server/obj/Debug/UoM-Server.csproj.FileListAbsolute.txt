@@ -1,0 +1,10 @@
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\obj\Debug\UoM-Server.csprojAssemblyReference.cache
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\obj\Debug\UoM_Server.ServerGUI.resources
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\obj\Debug\UoM_Server.Properties.Resources.resources
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\obj\Debug\UoM-Server.csproj.GenerateResource.cache
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\obj\Debug\UoM-Server.csproj.CoreCompileInputs.cache
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\bin\Debug\UoM-Server.exe.config
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\bin\Debug\UoM-Server.exe
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\bin\Debug\UoM-Server.pdb
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\obj\Debug\UoM-Server.exe
+C:\Users\Aditya\source\repos\Eratos-UoM-Backend\UoM-Server\UoM-Server\obj\Debug\UoM-Server.pdb
