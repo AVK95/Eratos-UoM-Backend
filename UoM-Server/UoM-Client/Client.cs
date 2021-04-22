@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
 
 namespace UoMClient
 {
@@ -9,8 +10,9 @@ namespace UoMClient
     {
         static void Main(String[] args)
         {
+            
             Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8888));
+            clientSocket.Connect(new IPEndPoint(IPAddress.Any, 3000));
 
             byte[] data = new byte[1024];
             int count = clientSocket.Receive(data);
@@ -20,14 +22,15 @@ namespace UoMClient
             while (true)
             {
                 string s = Console.ReadLine();
-                Console.Write(s);
                 clientSocket.Send(Encoding.UTF8.GetBytes(s));
             }
 
 
-
             Console.ReadKey();
+            Console.Write("client");
             clientSocket.Close();
+            
+
         }
     }
 }
