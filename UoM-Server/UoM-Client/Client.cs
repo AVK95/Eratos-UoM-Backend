@@ -17,11 +17,13 @@ namespace UoMClient
             string msg = Encoding.UTF8.GetString(data, 0, count);
 
             Console.Write(msg);
+            while (true)
+            {
+                string s = Console.ReadLine();
+                Console.Write(s);
+                clientSocket.Send(Encoding.UTF8.GetBytes(s));
+            }
 
-            string s = Console.ReadLine();
-            Console.Write(s);
-
-            clientSocket.Send(Encoding.UTF8.GetBytes(s));
 
 
             Console.ReadKey();
