@@ -1,0 +1,267 @@
+{
+	"info": {
+		"_postman_id": "465496f4-dcf5-4f2a-8ecc-804aee77d191",
+		"name": "Primary",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create a new resource",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"@type\": \"https://auth.eratos.com/.well-known/jwks.json\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://staging.e-pn.io/resources",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve the resource",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://staging.e-pn.io/resources/ghk5invbbtbrq4pxdh6appzr",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources",
+						"ghk5invbbtbrq4pxdh6appzr"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update the resource",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@date\": \"2021-04-22T06:12:57.287996796Z\",\r\n    \"@externalSources\": [],\r\n    \"@id\": \"https://staging.e-pn.io/resources/bl3ti5jiwro74pc4clgphynk\",\r\n    \"@owner\": \"https://staging.e-pn.io/users/xsrudeulfvtr2eiaiksic2jf\",\r\n    \"@policy\": \"https://staging.e-pn.io/policies/nfsl5ympdmeozrp6r3a6ngqv\",\r\n    \"@public\": true,\r\n    \"@type\": \"https://auth.eratos.com/.well-known/jwks.json\",\r\n    \"@userPerms\": [\r\n        \"Get\",\r\n        \"Download\",\r\n        \"Edit\",\r\n        \"Upload\",\r\n        \"ChangePolicy\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://staging.e-pn.io/resources/bl3ti5jiwro74pc4clgphynk",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources",
+						"bl3ti5jiwro74pc4clgphynk"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of versions for this resource",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://staging.e-pn.io/resources/7q5p3hsvqoy5spul2i2yurfa/versions",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources",
+						"7q5p3hsvqoy5spul2i2yurfa",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch the geometry, bounding box, or central point",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://staging.e-pn.io/resources/ghk5invbbtbrq4pxdh6appzr/geo",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources",
+						"ghk5invbbtbrq4pxdh6appzr",
+						"geo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update the geometry attached to the resource",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[133.499861,-27.000139]}}",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://staging.e-pn.io/resources/bl3ti5jiwro74pc4clgphynk/geo",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources",
+						"bl3ti5jiwro74pc4clgphynk",
+						"geo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve links from this resource",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://staging.e-pn.io/resources/ghk5invbbtbrq4pxdh6appzr/links",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources",
+						"ghk5invbbtbrq4pxdh6appzr",
+						"links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve the policy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://staging.e-pn.io/policies/nfsl5ympdmeozrp6r3a6ngqv",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"policies",
+						"nfsl5ympdmeozrp6r3a6ngqv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read the data's content",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://staging.e-pn.io/resources/olbd4y37lrjmkfvmqfy7jo6t",
+					"protocol": "https",
+					"host": [
+						"staging",
+						"e-pn",
+						"io"
+					],
+					"path": [
+						"resources",
+						"olbd4y37lrjmkfvmqfy7jo6t"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik56SXhNRFZFT1ROR01EUTJRall3TUVNeU1VWkROa0l6TlRZMFJrSTVNakV6TURnd1FqSkJRUSJ9.eyJodHRwczovL2VyYXRvcy5haS9lbWFpbCI6InVvbS1jbGdycEBlcmF0b3MuY29tIiwiaHR0cHM6Ly9lcmF0b3MuYWkvZW1haWxfdmVyaWZpZWQiOnRydWUsImh0dHBzOi8vZXJhdG9zLmFpL25hbWUiOiJVbml2ZXJzaXR5IG9mIE1lbGJvdXJuZSBHcm91cCIsImlzcyI6Imh0dHBzOi8vYXV0aC5lcmF0b3MuY29tLyIsInN1YiI6ImF1dGgwfDYwNTg1MTc5NzkwNTI1MDA2OTAxYmUzOSIsImF1ZCI6WyJlcmF0b3MtYXBpIiwiaHR0cHM6Ly9lcmF0b3MuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYyMDEzMzg0NywiZXhwIjoxNjIwMjIwMjQ3LCJhenAiOiJEVVExRFpNWW1JQnZNVElqZTJxM0psWU5GNXlpYWNLdyIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgcmVhZDpyZXNvdXJjZXMgZWRpdDpyZXNvdXJjZXMgcmVhZDpjb25uZWN0b3JzIGVkaXQ6Y29ubmVjdG9ycyIsInBlcm1pc3Npb25zIjpbImVkaXQ6YWNjZXNzdG9rZW5zIiwiZWRpdDpjb25uZWN0b3JzIiwiZWRpdDpub2RlcyIsImVkaXQ6cG9saWNpZXMiLCJlZGl0OnJlc291cmNlcyIsInJlYWQ6YWNjZXNzdG9rZW5zIiwicmVhZDpjb25uZWN0b3JzIiwicmVhZDpub2RlcyIsInJlYWQ6cG9saWNpZXMiLCJyZWFkOnJlc291cmNlcyJdfQ.Vh9E3K9WRyvOhWZLo8Ou3JrvV-A4EeOfOcBiIcdydeRrH4qb27zY1QsfKqflQVIQmR2yI6lm5pXx9tKFaZMu_Y09fEvPlt-8XN60sJmLh9KkKWs15blmRXZyLYqA2qSCd2oksZlkGl37ZFPPPPZsFHQeJuqyU3-XUXb0arLKx2pwEusMbHk3vRxvFC97NDiqKscLIhCyJQFO86MW_Rq8Udy4ojrAsWuG1Cx0vwbsHh-AHq-XSSf4nobjxiprFOf2wzzlC5PQZJjfndx4zx7TUO768cfXOSJ_TfVyxl5Wfqy5oyTpNbPnYtqd50goL79TE9QjGLMc8UfIrjoQLZ4RBw",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

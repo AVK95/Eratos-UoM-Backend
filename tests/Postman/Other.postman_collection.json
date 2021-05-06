@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "d0553e57-6e2e-4f52-b6f8-7d9da0d46e23",
+		"name": "Other",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Dataset",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "User info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "get node",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik56SXhNRFZFT1ROR01EUTJRall3TUVNeU1VWkROa0l6TlRZMFJrSTVNakV6TURnd1FqSkJRUSJ9.eyJodHRwczovL2VyYXRvcy5haS9lbWFpbCI6InVvbS1jbGdycEBlcmF0b3MuY29tIiwiaHR0cHM6Ly9lcmF0b3MuYWkvZW1haWxfdmVyaWZpZWQiOnRydWUsImh0dHBzOi8vZXJhdG9zLmFpL25hbWUiOiJVbml2ZXJzaXR5IG9mIE1lbGJvdXJuZSBHcm91cCIsImlzcyI6Imh0dHBzOi8vYXV0aC5lcmF0b3MuY29tLyIsInN1YiI6ImF1dGgwfDYwNTg1MTc5NzkwNTI1MDA2OTAxYmUzOSIsImF1ZCI6WyJlcmF0b3MtYXBpIiwiaHR0cHM6Ly9lcmF0b3MuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYyMDEzMzg0NywiZXhwIjoxNjIwMjIwMjQ3LCJhenAiOiJEVVExRFpNWW1JQnZNVElqZTJxM0psWU5GNXlpYWNLdyIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgcmVhZDpyZXNvdXJjZXMgZWRpdDpyZXNvdXJjZXMgcmVhZDpjb25uZWN0b3JzIGVkaXQ6Y29ubmVjdG9ycyIsInBlcm1pc3Npb25zIjpbImVkaXQ6YWNjZXNzdG9rZW5zIiwiZWRpdDpjb25uZWN0b3JzIiwiZWRpdDpub2RlcyIsImVkaXQ6cG9saWNpZXMiLCJlZGl0OnJlc291cmNlcyIsInJlYWQ6YWNjZXNzdG9rZW5zIiwicmVhZDpjb25uZWN0b3JzIiwicmVhZDpub2RlcyIsInJlYWQ6cG9saWNpZXMiLCJyZWFkOnJlc291cmNlcyJdfQ.Vh9E3K9WRyvOhWZLo8Ou3JrvV-A4EeOfOcBiIcdydeRrH4qb27zY1QsfKqflQVIQmR2yI6lm5pXx9tKFaZMu_Y09fEvPlt-8XN60sJmLh9KkKWs15blmRXZyLYqA2qSCd2oksZlkGl37ZFPPPPZsFHQeJuqyU3-XUXb0arLKx2pwEusMbHk3vRxvFC97NDiqKscLIhCyJQFO86MW_Rq8Udy4ojrAsWuG1Cx0vwbsHh-AHq-XSSf4nobjxiprFOf2wzzlC5PQZJjfndx4zx7TUO768cfXOSJ_TfVyxl5Wfqy5oyTpNbPnYtqd50goL79TE9QjGLMc8UfIrjoQLZ4RBw",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
