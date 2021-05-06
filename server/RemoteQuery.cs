@@ -4,7 +4,8 @@
  *                                                                         *
  * Usage: Create a function with a string argument 'query' in your program *
  * Copy the code inside the main function and put it inside your function  *
- * Pass on the query to the statement in line 33.                          *
+ * Pass on the query to the statement in line 34.                          *
+ * Table Names must be fully qualified !!!                                 *
  **************************************************************************/
 
 using System;
