@@ -17,6 +17,8 @@ namespace UoM_Server
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ServerGUI());
+
+            // Code for testing request handler
             //Console.WriteLine(new RequestHandler().CreateNewResource("https://schemas.eratos.ai/json/utas.climateinfo.csv", "average"));
             //Console.WriteLine(new RequestHandler().ShowResourceVersions(""));
             //Console.WriteLine(new RequestHandler().DeleteResource(""));

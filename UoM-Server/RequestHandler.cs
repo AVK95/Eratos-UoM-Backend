@@ -62,14 +62,14 @@ namespace UoM_Server
             client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", usingToken));
 
             var requestPara = "";
-            if(type != null)
+            if (type != null)
             {
                 requestPara += "?type=" + type;
             }
 
-            if(detail != null)
+            if (detail != null)
             {
-                if(requestPara == "")
+                if (requestPara == "")
                 {
                     requestPara += "?detail=" + detail;
                 }
@@ -85,7 +85,7 @@ namespace UoM_Server
             return response.Content;
         }
 
-        
+
         public static string AUTHORISE_USER(string token)
         {
             var client = new RestClient(Config.Tracker_Node_Domain);
