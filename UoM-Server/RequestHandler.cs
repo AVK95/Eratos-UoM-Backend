@@ -3,20 +3,256 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http;
+using System.Net;
 using System.Web;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Security.Cryptography;
 using System.IO.Compression;
 
 namespace UoM_Server
 {
+    public class TokenNodeResponse
+    {
+        public string token { get; set; }
+    }
+    public class GNTaskMeta
+    {
+        public string resource { get; set; }
+    }
+    public class GNTaskRequest
+    {
+        public string priority { get; set; }
+        public string type { get; set; }
+        public GNTaskMeta meta { get; set; }
+    }
+    public class GNTaskResponse
+    {
+
+        public string id { get; set; }
+        public string createdAt { get; set; }
+        public string lastUpdatedAt { get; set; }
+        public string startedAt { get; set; }
+        public string endedAt { get; set; }
+        public string priority { get; set; }
+        public string state { get; set; }
+        public string type { get; set; }
+        public string error { get; set; }
+        public GNTaskMeta meta { get; set; }
+    }
     class RequestHandler
     {
         string usingToken = Config.Access_Token;
 
+        enum Priority
+        {
+            Low,
+            Normal,
+            High
+        }
 
+        static string SHA256HashStringHex(string content)
+        {
+            byte[] hbytes;
+            byte[] cbytes = Encoding.UTF8.GetBytes(content);
+            using (SHA256 mySHA256 = SHA256.Create())
+            {
+                hbytes = mySHA256.ComputeHash(cbytes);
+            }
+            return BitConverter.ToString(hbytes).Replace("-", "").ToLower();
+        }
+        static string HMACHashStringHex(string content, string keyB64)
+        {
+            byte[] hbytes;
+            byte[] cbytes = Encoding.UTF8.GetBytes(content);
+            string normB64 = keyB64.Replace('_', '/').Replace('-', '+'); // URLSafe b64 -> standard b64.
+            switch (normB64.Length % 4)
+            { // Add b64 padding.
+                case 2: normB64 += "=="; break;
+                case 3: normB64 += "="; break;
+            }
+            byte[] kbytes = Convert.FromBase64String(normB64);
+            using (HMACSHA256 hash = new HMACSHA256(kbytes))
+            {
+                hbytes = hash.ComputeHash(cbytes);
+            }
+            return BitConverter.ToString(hbytes).Replace("-", "").ToLower();
+        }
+
+        static string EratosSignedGet(string accessId, string accessSecret, string uri)
+        {
+            string curTime = DateTime.UtcNow.ToString("o");
+            string canonReq = "GET\n";
+
+            Uri uriObj = new Uri(uri);
+            canonReq += uriObj.LocalPath + "\n";
+            canonReq += uriObj.Query + "\n";
+
+            canonReq += "host:" + uriObj.Host + "\n";
+            canonReq += "x-eratos-date:" + curTime + "\n";
+
+            string bodyHash = SHA256HashStringHex("");
+            canonReq += bodyHash;
+
+            string signedMAC = HMACHashStringHex(canonReq, accessSecret);
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.Headers.Set("X-Eratos-Date", curTime);
+            request.Headers.Set("Authorization", "ERATOS-HMAC-SHA256 Credential=" + accessId + ", SignedHeaders=host;x-eratos-date, Signature=" + signedMAC);
+
+            try
+            {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (WebException e)
+            {
+                using (WebResponse response = e.Response)
+                {
+                    HttpWebResponse httpResponse = (HttpWebResponse)response;
+                    Console.WriteLine("Error code: {0}", httpResponse.StatusCode);
+                    using (Stream data = response.GetResponseStream())
+                    using (var reader = new StreamReader(data))
+                    {
+                        string text = reader.ReadToEnd();
+                        Console.WriteLine(text);
+                        throw e;
+                    }
+                }
+            }
+        }
+
+        static string taskGNNodeDomain = "https://o3aknuq3wtocrg2gjasamrro.nds.staging.e-tr.io:20502";
+        static GNTaskResponse EratosGNNewTask(string token, Priority priority, string resource)
+        {
+            GNTaskRequest req = new GNTaskRequest();
+            req.priority = priority.ToString();
+            req.type = "GenerateClimateInfo";
+            req.meta = new GNTaskMeta();
+            req.meta.resource = resource;
+            byte[] body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<GNTaskRequest>(req));
+            string json = EratosGNPost(token, taskGNNodeDomain + "/tasks", body);
+            return JsonSerializer.Deserialize<GNTaskResponse>(json);
+        }
+        static GNTaskResponse EratosGNGetTask(string token, string id)
+        {
+            string json = EratosGNGet(token, taskGNNodeDomain + "/tasks/" + id);
+            return JsonSerializer.Deserialize<GNTaskResponse>(json);
+        }
+        static void EratosGNRemoveTask(string token, string id)
+        {
+            EratosGNDelete(token, taskGNNodeDomain + "/tasks/" + id);
+        }
+        static string EratosGNPost(string token, string uri, byte[] body)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.Method = "POST";
+            request.ContentLength = body.Length;
+            request.ContentType = "application/json";
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.Headers.Set("Authorization", "Bearer " + token);
+
+            Stream dataStream = request.GetRequestStream();
+            dataStream.Write(body, 0, body.Length);
+            dataStream.Close();
+
+            try
+            {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (WebException e)
+            {
+                using (WebResponse response = e.Response)
+                {
+                    HttpWebResponse httpResponse = (HttpWebResponse)response;
+                    Console.WriteLine("Error code: {0}", httpResponse.StatusCode);
+                    using (Stream data = response.GetResponseStream())
+                    using (var reader = new StreamReader(data))
+                    {
+                        string text = reader.ReadToEnd();
+                        Console.WriteLine(text);
+                        throw e;
+                    }
+                }
+            }
+        }
+        static string EratosGNGet(string token, string uri)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.Headers.Set("Authorization", "Bearer " + token);
+
+            try
+            {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (WebException e)
+            {
+                using (WebResponse response = e.Response)
+                {
+                    HttpWebResponse httpResponse = (HttpWebResponse)response;
+                    Console.WriteLine("Error code: {0}", httpResponse.StatusCode);
+                    using (Stream data = response.GetResponseStream())
+                    using (var reader = new StreamReader(data))
+                    {
+                        string text = reader.ReadToEnd();
+                        Console.WriteLine(text);
+                        throw e;
+                    }
+                }
+            }
+        }
+
+        static string EratosGNDelete(string token, string uri)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.Method = "DELETE";
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.Headers.Set("Authorization", "Bearer " + token);
+
+            try
+            {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (WebException e)
+            {
+                using (WebResponse response = e.Response)
+                {
+                    HttpWebResponse httpResponse = (HttpWebResponse)response;
+                    Console.WriteLine("Error code: {0}", httpResponse.StatusCode);
+                    using (Stream data = response.GetResponseStream())
+                    using (var reader = new StreamReader(data))
+                    {
+                        string text = reader.ReadToEnd();
+                        Console.WriteLine(text);
+                        throw e;
+                    }
+                }
+            }
+        }
         public string CreateNewResource(string type, string name)
         {
 
