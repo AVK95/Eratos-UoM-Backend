@@ -82,7 +82,7 @@ namespace UoM_Server
             return BitConverter.ToString(hbytes).Replace("-", "").ToLower();
         }
 
-        static string EratosSignedGet(string accessId, string accessSecret, string uri)
+        static string GetToken(string accessId, string accessSecret, string uri)
         {
             string curTime = DateTime.UtcNow.ToString("o");
             string canonReq = "GET\n";
@@ -130,8 +130,8 @@ namespace UoM_Server
             }
         }
 
-        static string taskGNNodeDomain = "https://o3aknuq3wtocrg2gjasamrro.nds.staging.e-tr.io:20502";
-        static GNTaskResponse EratosGNNewTask(string token, Priority priority, string resource)
+        
+        static GNTaskResponse CreateNewTask(string token, Priority priority, string resource)
         {
             GNTaskRequest req = new GNTaskRequest();
             req.priority = priority.ToString();
@@ -139,19 +139,19 @@ namespace UoM_Server
             req.meta = new GNTaskMeta();
             req.meta.resource = resource;
             byte[] body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<GNTaskRequest>(req));
-            string json = EratosGNPost(token, taskGNNodeDomain + "/tasks", body);
+            string json = PostWithToken(token, Config.taskGNNodeDomain + "/tasks", body);
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
         }
-        static GNTaskResponse EratosGNGetTask(string token, string id)
+        static GNTaskResponse GetTask(string token, string id)
         {
-            string json = EratosGNGet(token, taskGNNodeDomain + "/tasks/" + id);
+            string json = GetWithToken(token, Config.taskGNNodeDomain + "/tasks/" + id);
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
         }
-        static void EratosGNRemoveTask(string token, string id)
+        static void RemoveTask(string token, string id)
         {
-            EratosGNDelete(token, taskGNNodeDomain + "/tasks/" + id);
+            DeleteWithToken(token, Config.taskGNNodeDomain + "/tasks/" + id);
         }
-        static string EratosGNPost(string token, string uri, byte[] body)
+        static string PostWithToken(string token, string uri, byte[] body)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = "POST";
@@ -189,7 +189,7 @@ namespace UoM_Server
                 }
             }
         }
-        static string EratosGNGet(string token, string uri)
+        static string GetWithToken(string token, string uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -221,7 +221,7 @@ namespace UoM_Server
             }
         }
 
-        static string EratosGNDelete(string token, string uri)
+        static string DeleteWithToken(string token, string uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = "DELETE";
