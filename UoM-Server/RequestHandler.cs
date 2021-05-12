@@ -43,6 +43,48 @@ namespace UoM_Server
         public string error { get; set; }
         public GNTaskMeta meta { get; set; }
     }
+
+    public class PolicyResponse
+    {
+
+        public string id { get; set; }
+        public string date { get; set; }
+        public string owner { get; set; }
+        public string fora { get; set; } //for variable is forbidden
+        public string type { get; set; }
+        public PolicyInvites invites { get; set; }
+        public PolicyProperties[] links { get; set; }
+        public PolicyRules rules { get; set; }
+    }
+
+    public class PolicyInvites
+    {
+
+        public string id { get; set; }
+        public string createdAt { get; set; }
+        public string createdBy { get; set; }
+        public string email { get; set; }
+        public string[] actions { get; set; }
+
+    }
+
+    public class PolicyProperties
+    {
+
+        public string email { get; set; }
+        public string fullName { get; set; }
+
+    }
+
+    public class PolicyRules
+    {
+
+        public string[] actions { get; set; }
+        public string effect { get; set; }
+        public string actor { get; set; }
+
+    }
+
     class RequestHandler
     {
         string usingToken = Config.Access_Token;
@@ -144,8 +186,14 @@ namespace UoM_Server
         }
         static GNTaskResponse GetTask(string token, string id)
         {
-            string json = GetWithToken(token, Config.taskGNNodeDomain + "/tasks/" + id);
+            string json = GetWithToken(token, Config.Primary_Node_Domain + "/tasks/" + id);
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
+        }
+
+        static PolicyResponse GetPolicy(string token, string id)
+        {
+            string json = GetWithToken(token, Config.taskGNNodeDomain + "/policies/" + id);
+            return JsonSerializer.Deserialize<PolicyResponse>(json);
         }
         static void RemoveTask(string token, string id)
         {
