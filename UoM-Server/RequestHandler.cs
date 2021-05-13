@@ -11,7 +11,12 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Security.Cryptography;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.IO.Compression;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
 
 namespace UoM_Server
 {
@@ -44,27 +49,69 @@ namespace UoM_Server
         public GNTaskMeta meta { get; set; }
     }
 
+    [DataContract]
+    public class Resource
+    {
+        [DataMember(Name = "@id", EmitDefaultValue=false)]
+        public string id { get; set; }
+
+        [DataMember(Name = "@geo", EmitDefaultValue=false)]
+        public string geo { get; set; }
+
+        [DataMember(Name = "@data", EmitDefaultValue=false)]
+        public string data { get; set; }
+
+        [DataMember(Name = "@date", EmitDefaultValue=false)]
+        public string date { get; set; }
+
+        [DataMember(Name = "@owner", EmitDefaultValue=false)]
+        public string owner { get; set; }
+
+        [DataMember(Name = "@policy", EmitDefaultValue=false)]
+        public string policy { get; set; }
+
+        [DataMember(Name = "@type")]
+        public string type { get; set; }
+
+        [DataMember(Name = "@public", EmitDefaultValue=false)]
+        public bool isPublic { get; set; }
+
+        [DataMember(Name = "@userPerms", EmitDefaultValue=false)]
+        public List<string> userPerms { get; set; }
+
+        [DataMember(Name = "@externalSources", EmitDefaultValue=false)]
+        public List<string> externalSources { get; set; }
+
+        [DataMember(Name = "name", EmitDefaultValue=false)]
+        public string name { get; set; }
+    }
     public class PolicyResponse
     {
-
+        [JsonPropertyName("@id")]
         public string id { get; set; }
+        [JsonPropertyName("@date")]
         public string date { get; set; }
+        [JsonPropertyName("@owner")]
         public string owner { get; set; }
-        public string fora { get; set; } //for variable is forbidden
+        [JsonPropertyName("@for")] 
+        public string forAt { get; set; } 
+        [JsonPropertyName("@type")]
         public string type { get; set; }
+        [JsonPropertyName("@invites")]
         public PolicyInvites invites { get; set; }
+        [JsonPropertyName("@links")]
         public PolicyProperties[] links { get; set; }
         public PolicyRules rules { get; set; }
     }
 
     public class PolicyInvites
     {
-
+        [JsonPropertyName("$id")]
         public string id { get; set; }
         public string createdAt { get; set; }
         public string createdBy { get; set; }
         public string email { get; set; }
-        public string[] actions { get; set; }
+        public List<string> actions { get; set; }
 
     }
 
@@ -79,7 +126,7 @@ namespace UoM_Server
     public class PolicyRules
     {
 
-        public string[] actions { get; set; }
+        public List<string> actions { get; set; }
         public string effect { get; set; }
         public string actor { get; set; }
 
@@ -316,6 +363,11 @@ namespace UoM_Server
             return response.Content;
         }
 
+        static Resource GetResource(string token, string id)
+        {
+            string json = GetWithToken(token, Config.Primary_Node_Domain + "/resources/" + id);
+            return JsonSerializer.Deserialize<Resource>(json);
+        }
 
         public string ShowResourceVersions(string resourceID)
         {
