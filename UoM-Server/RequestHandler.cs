@@ -479,7 +479,7 @@ namespace UoM_Server
             return response.Content;
         }
 
-        public string CreatePersonResource(string userName, string description)
+        public string CreatePersonResource(string userName, string description, string accessId, string accessSecret)
         {
             PersonResource ps = new PersonResource();
             ps.type = "https://schemas.eratos.ai/json/person";
@@ -492,7 +492,7 @@ namespace UoM_Server
 
         }
 
-        public ResourcePolicy GetPolicy(string personResource)
+        public ResourcePolicy GetPolicy(string personResource, string accessId, string accessSecret)
         {
             ps = ReadObjFromJSON<PersonResource>(personResource);
             json = EratosSignedRequest(accessId, accessSecret, "GET", ps.policy, "");
@@ -500,7 +500,7 @@ namespace UoM_Server
             return pol;
         }
 
-        public string AddUserToPolicy(ResourcePolicy pol, string userURI)
+        public string AddUserToPolicy(ResourcePolicy pol, string userURI, string accessId, string accessSecret)
         {
             ResourcePolicyRule newRule = new ResourcePolicyRule();
             newRule.actor = userURI; 
