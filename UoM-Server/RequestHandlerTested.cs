@@ -102,6 +102,18 @@ namespace UoM_Server
         public List<ResourcePolicyRule> rules { get; set; }
     }
 
+    public class UserDetails
+    {
+        public string id { get; set; }
+        public string email { get; set; }
+        public string name { get; set; }
+        public string auth0Id { get; set; }
+        public string createdAt { get; set; }
+        public string info { get; set; }
+        public string resourcePolicy { get; set; }
+
+    }
+
     public class GNTaskMeta
     {
         public string resource { get; set; }
@@ -325,6 +337,12 @@ namespace UoM_Server
         {
             string json = GetWithToken(token, Config.taskGNNodeDomain + "/tasks/" + id);
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
+        }
+
+        static UserDetails GetUserDetails(string token)
+        {
+            string json = GetWithToken(token, Config.Tracker_Node_Domain + "/auth/me");
+            return JsonSerializer.Deserialize<UserDetails>(json);
         }
         static void RemoveTask(string token, string id)
         {
