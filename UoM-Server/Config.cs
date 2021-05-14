@@ -12,8 +12,8 @@ namespace UoM_Server
 
         public static string Primary_Node_Domain = "https://staging.e-pn.io/";
         public static string Tracker_Node_Domain = "https://staging.e-tr.io/";
-
-
+        public static string trackerAuthURL = "https://staging.e-tr.io/token/node";
+        public static string taskGNNodeDomain = "https://o3aknuq3wtocrg2gjasamrro.nds.staging.e-tr.io:20502";
     }
 }
 
