@@ -167,7 +167,7 @@ namespace UoM_Server.Controllers
             string json = PostWithToken(token, Config.Gateway_Node_Domain + "/tasks", body);
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
         }
-        public GNTaskResponse GetTask(string token, string id)
+        public static GNTaskResponse GetTask(string token, string id)
         {
             string json = GetWithToken(token, Config.Gateway_Node_Domain + "/tasks/" + id);
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
