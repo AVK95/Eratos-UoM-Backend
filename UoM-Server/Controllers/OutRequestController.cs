@@ -119,9 +119,10 @@ namespace UoM_Server.Controllers
         #endregion
 
         #region Geometry
-        public string FetchGeometry(string resourceId, string type = null, string detail = null)
+        public string FetchGeometry(string resourceId, string type = null, string detail = null) 
         {
-            
+            // Having some error when giving parameters, probably because some process is needed for the parameters in the signed header.
+            // It shouldn't matter because we're not going to call it when processing tasks. This function is just for test.
             var requestPara = "";
             if (type != null)
             {
