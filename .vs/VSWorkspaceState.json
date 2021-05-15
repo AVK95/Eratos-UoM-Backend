@@ -1,8 +1,14 @@
 {
   "ExpandedNodes": [
     "",
-    "\\UoM-Server"
+    "\\UoM-Server",
+    "\\UoM-Server\\bin",
+    "\\UoM-Server\\Controllers",
+    "\\UoM-Server\\Models",
+    "\\UoM-Server\\obj",
+    "\\UoM-Server\\packages",
+    "\\UoM-Server\\Properties"
   ],
-  "SelectedNode": "\\UoM-Server\\UoM-Server.sln",
+  "SelectedNode": "\\UoM-Server\\Controllers\\OutRequestController.cs",
   "PreviewInSolutionExplorer": false
 }
