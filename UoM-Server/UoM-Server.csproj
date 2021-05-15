@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="Models\Geometry.cs" />
     <Compile Include="Models\Policy.cs" />
     <Compile Include="Models\Resource.cs" />
     <Compile Include="Models\Task.cs" />

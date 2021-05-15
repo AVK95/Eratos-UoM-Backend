@@ -28,6 +28,11 @@ namespace UoM_Server
             Console.WriteLine("Done! The versions are " + versions);
             Console.WriteLine("-----------------------------------");
             System.Threading.Thread.Sleep(5000);
+            Console.WriteLine("Testing update geometry.");
+            string reply = orc.UpdateGeometry(rsc.id, "POINT(140.3142799 -42.84756651)");
+            Console.WriteLine("Done! Message: " + reply);
+            Console.WriteLine("-----------------------------------");
+            System.Threading.Thread.Sleep(5000);
             Console.WriteLine("Testing get policy.");
             ResourcePolicy policy = orc.GetPolicy(rsc.id);
             Console.WriteLine("Done! The policy id is " + policy.id);

@@ -145,9 +145,9 @@ namespace UoM_Server.Controllers
             return geo;
         }
 
-        public string UpdateGeometry(string resourceId,string geometry)
+        public string UpdateGeometry(string resourceUri,string geometry)
         {
-            HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "POST", Config.Primary_Node_Domain + "resources/" + resourceId + "/geo", geometry, "application/vnd.eratos.geo+wkt", "identity");
+            HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "POST", resourceUri + "/geo", geometry, "application/vnd.eratos.geo+wkt", "identity");
             string response = SendRequest(request);
             return response;
         }
@@ -349,13 +349,12 @@ namespace UoM_Server.Controllers
                 canonReq += "content-type:" + contentType + "\n";
                 if (encoding != null)
                 {
-                    canonReq += "content-encoding: " + encoding + "\n";
+                    canonReq += "content-encoding:" + encoding + "\n";
                 }
             }
 
             string bodyHash = SHA256HashBytesHex(body);
             canonReq += bodyHash;
-
             string signedMAC = HMACHashStringHex(canonReq, accessSecret);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);

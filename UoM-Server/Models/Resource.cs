@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text.Json;
-using Newtonsoft.Json;
 
 namespace UoM_Server.Models
 {
