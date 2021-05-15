@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 namespace UoM_Server.Services
 {
 
-    public static class ModuleService
+    public class ModuleService
     {
         private static List<ModuleList> AllModules { get; }
         static ModuleService()
         {
-            AllModules = new List<ModuleList>();
+            var AllModules = new List<ModuleList>();
         }
-        public static List<ModuleList> getAllActiveModule() => AllModules;
+        public static List<ModuleList> getAllActiveModule() => AllModules.FindAll(x => x.isAvailable == "False");
+        public static List<ModuleList> getAllModule() => AllModules;
     }
 }

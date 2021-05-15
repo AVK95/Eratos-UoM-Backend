@@ -9,7 +9,11 @@ namespace UoM_Server.Models
     public class ModuleList
     {
         public string moduleName { get; set; }
+        public string schema { get; set; }
         public string isAvailable { get; set; }
+
+        }
+
     }
 
     
