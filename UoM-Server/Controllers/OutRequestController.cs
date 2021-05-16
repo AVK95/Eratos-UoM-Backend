@@ -7,7 +7,6 @@ using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 using System.IO;
 using System.Text.Json;
-using System.Security.Cryptography;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.IO.Compression;
@@ -59,10 +58,10 @@ namespace UoM_Server.Controllers
             res.name = name;
 
             //string req = WriteObjToJSON<Resource>(res);
-            string req = WriteObjToJSON<Resource>(res);
+            string req = Util.WriteObjToJSON<Resource>(res);
             HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "POST", "https://staging.e-pn.io/resources", req);
             string json = SendRequest(request);
-            Resource resultRes = ReadObjFromJSON<Resource>(json);
+            Resource resultRes = Util.ReadObjFromJSON<Resource>(json);
             return resultRes;
 
         }
@@ -72,7 +71,7 @@ namespace UoM_Server.Controllers
             HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "GET", resourceUri, "");
             request.Accept = "application/json";
             string json = SendRequest(request);
-            Resource res = ReadObjFromJSON<Resource>(json);
+            Resource res = Util.ReadObjFromJSON<Resource>(json);
             return res;
         }
 
@@ -97,7 +96,7 @@ namespace UoM_Server.Controllers
             Resource res = GetResource(resourceId);
             HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "GET", res.policy, "");
             string json = SendRequest(request);
-            ResourcePolicy pol = ReadObjFromJSON<ResourcePolicy>(json);
+            ResourcePolicy pol = Util.ReadObjFromJSON<ResourcePolicy>(json);
             return pol;
         }
 
@@ -110,7 +109,7 @@ namespace UoM_Server.Controllers
                 "Get", "Download"
             };
             pol.rules.Add(newRule);
-            string polReq = WriteObjToJSON<ResourcePolicy>(pol);
+            string polReq = Util.WriteObjToJSON<ResourcePolicy>(pol);
             HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "PUT", pol.id, polReq);
             string response = SendRequest(request);
             return response;
@@ -184,7 +183,7 @@ namespace UoM_Server.Controllers
         {
             HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "GET", Config.Tracker_Node_Domain + Config.getToken_API, "");
             string json = SendRequest(request);
-            TokenNodeResponse tokenResponse = ReadObjFromJSON<TokenNodeResponse>(json);
+            TokenNodeResponse tokenResponse = Util.ReadObjFromJSON<TokenNodeResponse>(json);
             return tokenResponse.token;
         }
 
@@ -293,45 +292,6 @@ namespace UoM_Server.Controllers
 
         #endregion
 
-        #region Hash Functions
-        static string SHA256HashBytesHex(byte[] content)
-        {
-            byte[] hbytes;
-            using (SHA256 mySHA256 = SHA256.Create())
-            {
-                hbytes = mySHA256.ComputeHash(content);
-            }
-            return BitConverter.ToString(hbytes).Replace("-", "").ToLower();
-        }
-        static string SHA256HashStringHex(string content)
-        {
-            byte[] hbytes;
-            byte[] cbytes = Encoding.UTF8.GetBytes(content);
-            using (SHA256 mySHA256 = SHA256.Create())
-            {
-                hbytes = mySHA256.ComputeHash(cbytes);
-            }
-            return BitConverter.ToString(hbytes).Replace("-", "").ToLower();
-        }
-        static string HMACHashStringHex(string content, string keyB64)
-        {
-            byte[] hbytes;
-            byte[] cbytes = Encoding.UTF8.GetBytes(content);
-            string normB64 = keyB64.Replace('_', '/').Replace('-', '+'); // URLSafe b64 -> standard b64.
-            switch (normB64.Length % 4)
-            { // Add b64 padding.
-                case 2: normB64 += "=="; break;
-                case 3: normB64 += "="; break;
-            }
-            byte[] kbytes = Convert.FromBase64String(normB64);
-            using (HMACSHA256 hash = new HMACSHA256(kbytes))
-            {
-                hbytes = hash.ComputeHash(cbytes);
-            }
-            return BitConverter.ToString(hbytes).Replace("-", "").ToLower();
-        }
-        #endregion
-
         #region Authorisation
         static HttpWebRequest EratosSignedRequest(string accessId, string accessSecret, string method, string uri, string reqJSON, string contentType = "application/json", string encoding = null)
         {
@@ -354,9 +314,9 @@ namespace UoM_Server.Controllers
                 }
             }
 
-            string bodyHash = SHA256HashBytesHex(body);
+            string bodyHash = Util.SHA256HashBytesHex(body);
             canonReq += bodyHash;
-            string signedMAC = HMACHashStringHex(canonReq, accessSecret);
+            string signedMAC = Util.HMACHashStringHex(canonReq, accessSecret);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = method;
@@ -402,26 +362,6 @@ namespace UoM_Server.Controllers
             return response.Content;
         }
         #endregion
-
-        #region Json Converter
-        static string WriteObjToJSON<T>(T obj)
-        {
-            var ms = new MemoryStream();
-            var ser = new DataContractJsonSerializer(typeof(T));
-            ser.WriteObject(ms, obj);
-            byte[] json = ms.ToArray();
-            ms.Close();
-            return Encoding.UTF8.GetString(json, 0, json.Length);
-        }
-        static T ReadObjFromJSON<T>(string json) where T : class, new()
-        {
-            var dObj = new T();
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var ser = new DataContractJsonSerializer(dObj.GetType());
-            dObj = ser.ReadObject(ms) as T;
-            ms.Close();
-            return dObj;
-        }
-        #endregion
+ 
     }
 }
