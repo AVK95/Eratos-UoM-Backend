@@ -23,7 +23,8 @@ namespace DemoAzure
             resourceUri = resourceUri ?? data?.resourceUri;
             // Functions to call eratos server
             InRequestController irc = new InRequestController();
-            string versions = irc.getResourceVersion(resourceUri);
+            string versions = await Task.Run(() => irc.getResourceVersion(resourceUri));
+
             string responseMessage = (string.IsNullOrEmpty(resourceUri))
                 ? "Please pass a valid resourceUri (not a resource id)"
                 : $" {versions} ";
