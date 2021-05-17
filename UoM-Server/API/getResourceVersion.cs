@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UoM_Server.Controllers;
-namespace DemoAzure
+
+namespace API
 {
     public static class getResourceVersion
     {

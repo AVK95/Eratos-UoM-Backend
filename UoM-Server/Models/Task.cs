@@ -14,6 +14,7 @@ namespace UoM_Server.Models
         High
     }
 
+
     public class TokenNodeResponse
     {
         public string token { get; set; }

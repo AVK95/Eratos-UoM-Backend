@@ -489,14 +489,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\createTask.cs" />
     <Compile Include="API\getResourceVersion.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Controllers\DatabaseController.cs" />
     <Compile Include="Controllers\InRequestController.cs" />
     <Compile Include="Models\Geometry.cs" />
     <Compile Include="Models\Policy.cs" />
     <Compile Include="Models\Resource.cs" />
     <Compile Include="Models\Task.cs" />
     <Compile Include="Controllers\OutRequestController.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="ServerGUI.cs">
       <SubType>Form</SubType>
     </Compile>
