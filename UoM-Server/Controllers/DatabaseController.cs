@@ -10,7 +10,8 @@ namespace UoM_Server.Controllers
     {
         public string recordTask(GNTaskResponse task)
         {
-            // Need to be modified
+            // Function for uploading data into database. Need to be modified
+            
             return "";
         }
     }
