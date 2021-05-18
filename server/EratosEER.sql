@@ -4,93 +4,55 @@
 -- @author Aditya Vikram Khandelwal
 -- -------------------------------------------------------
 
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+CREATE TABLE [User] (
+  UserID INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
+  EratosUserID NVARCHAR(150) NOT NULL,
+  Email NVARCHAR(320) NOT NULL,
+  Name NVARCHAR(100) NOT NULL,
+  Auth0ID NVARCHAR(150) NOT NULL,
+  CreatedAt DATETIME NOT NULL,
+  Info NVARCHAR(300))
 
--- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
+CREATE TABLE [Order] (
+  OrderID INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
+  Price FLOAT,
+  Status NVARCHAR(100),
+  OrderTime DATETIME NULL,
+  UserID INT NOT NULL REFERENCES [User](UserID))
 
--- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE TABLE [Task] (
+  TaskID INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
+  CreatedAt DATETIME NOT NULL,
+  LastUpdatedAt DATETIME NULL,
+  StartedAt DATETIME,
+  EndedAt DATETIME,
+  Priority NVARCHAR(45),
+  State NVARCHAR(45),
+  Type NVARCHAR(45),
+  Meta NVARCHAR(300),
+  Error NVARCHAR(300),
+  UserID INT NOT NULL REFERENCES [User](UserID),
+  OrderID INT NOT NULL REFERENCES [Order](OrderID))
 
--- -----------------------------------------------------
--- Table `mydb`.`User`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`User` ;
+CREATE TABLE [Resource] (
+  ResourceID INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
+  EratosResourceID NVARCHAR(150) NOT NULL,
+  Date DATETIME,
+  Policy NVARCHAR(150),
+  Geo NVARCHAR(300),
+  Meta NVARCHAR(300))
 
-CREATE TABLE IF NOT EXISTS `mydb`.`User` (
-  `UserID` INT NOT NULL AUTO_INCREMENT,
-  `UserInfo1` INT NULL,
-  `UserInfo2` VARCHAR(45) NULL,
-  `UserInfo3` TINYINT NULL,
-  PRIMARY KEY (`UserID`))
-ENGINE = InnoDB;
+CREATE TABLE [ResourceTask] (
+  ResourceID INT REFERENCES [Resource](ResourceID),
+  TaskID INT NOT NULL REFERENCES [Task](TaskID))
 
+CREATE TABLE [Module] (
+  ModuleID INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
+  EratosModuleID NVARCHAR(150) NOT NULL,
+  ModuleName NVARCHAR(100) NOT NULL,
+  ModuleSchema NVARCHAR(100),
+  isActive TINYINT)
 
--- -----------------------------------------------------
--- Table `mydb`.`Task`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`Task` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`Task` (
-  `TaskID` INT NOT NULL AUTO_INCREMENT,
-  `UserID` INT NOT NULL,
-  `Priority` INT NULL,
-  `State` VARCHAR(45) NULL,
-  `Type` VARCHAR(45) NULL,
-  `OtherInfo` VARCHAR(45) NULL,
-  `Taskcol` VARCHAR(45) NULL,
-  PRIMARY KEY (`TaskID`),
-  INDEX `fk_Task_User_idx` (`UserID` ASC) VISIBLE,
-  CONSTRAINT `fk_Task_User`
-    FOREIGN KEY (`UserID`)
-    REFERENCES `mydb`.`User` (`UserID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `mydb`.`Resource`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`Resource` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`Resource` (
-  `ResourceID` INT NOT NULL AUTO_INCREMENT,
-  `ResourceURI` VARCHAR(100) NULL,
-  `OtherInfo` VARCHAR(45) NULL,
-  PRIMARY KEY (`ResourceID`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `mydb`.`ResourceTask`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`ResourceTask` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`ResourceTask` (
-  `TaskID` INT NOT NULL,
-  `ResourceID` INT NOT NULL,
-  PRIMARY KEY (`TaskID`, `ResourceID`),
-  INDEX `fk_ResourceTask_Task1_idx` (`TaskID` ASC) VISIBLE,
-  CONSTRAINT `fk_ResourceTask_Resource1`
-    FOREIGN KEY (`ResourceID`)
-    REFERENCES `mydb`.`Resource` (`ResourceID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ResourceTask_Task1`
-    FOREIGN KEY (`TaskID`)
-    REFERENCES `mydb`.`Task` (`TaskID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+CREATE TABLE [ResourceModule] (
+  ResourceID INT NOT NULL REFERENCES [Resource](ResourceID),
+  ModuleID INT NOT NULL REFERENCES [Module](ModuleID))
