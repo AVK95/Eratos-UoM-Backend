@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Collections;
 
-namespace UOM_Server
+namespace UoM_Server
 {
     public struct UserTable
     {
