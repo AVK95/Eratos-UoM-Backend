@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using UoM_Server.Models;
 
 namespace UoM_Server
 {
@@ -68,6 +69,23 @@ namespace UoM_Server
             dObj = ser.ReadObject(ms) as T;
             ms.Close();
             return dObj;
+        }
+        #endregion
+
+        #region Database Model Mapping Functions
+
+        public static ResourceTable MAP_TO_TABLE(Resource rsc)
+        {
+            DateTime now = DateTime.Now;
+            ResourceTable rscTable = new ResourceTable(0, rsc.id, rsc.type,rsc.name, now, rsc.policy, rsc.geo, rsc.data);
+            return rscTable;
+        }
+
+        public static TaskTable MAP_TO_TABLE(GNTaskResponse task, int userUri, int orderId)
+        {
+            DateTime now = DateTime.Now;
+            TaskTable taskTable = new TaskTable(0, task.id, now, DateTime.Parse(task.lastUpdatedAt), DateTime.Parse(task.startedAt), DateTime.Parse(task.endedAt), task.priority, task.state, task.type, task.meta.resource, task.error, userUri, orderId);
+            return taskTable;
         }
         #endregion
     }

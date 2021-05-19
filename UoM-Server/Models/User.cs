@@ -30,4 +30,26 @@ namespace UoM_Server.Models
         [DataMember (Name = "termsLastAcceptedVersion", EmitDefaultValue = false)]
         public int termsLastAcceptedVersion { get; set; }
     }
+
+    public struct UserTable
+    {
+        public int UserID { get; set; }
+        public string EratosUserID { get; set; }
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public string Auth0ID { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string Info { get; set; }
+
+        public UserTable(int userID, string eratosUserID, string email, string name, string auth0ID, DateTime createdAt, string info)
+        {
+            UserID = userID;
+            EratosUserID = eratosUserID;
+            Email = email;
+            Name = name;
+            Auth0ID = auth0ID;
+            CreatedAt = createdAt;
+            Info = info;
+        }
+    }
 }

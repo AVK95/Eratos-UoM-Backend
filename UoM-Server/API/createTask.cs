@@ -36,7 +36,7 @@ namespace API
             priority = priority ?? data?.priority;
 
             InRequestController irc = new InRequestController();
-            string response = await Task.Run(() => irc.createTask(userUri,orderId,moduleType,name,geometry,priority));
+            string response = await Task.Run(() => irc.createTask(userUri,int.Parse(orderId),moduleType,name,geometry,priority));
 
             string responseMessage = (string.IsNullOrEmpty(userUri) || string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(moduleType) || 
                 string.IsNullOrEmpty(name) || string.IsNullOrEmpty(geometry) || string.IsNullOrEmpty(priority))

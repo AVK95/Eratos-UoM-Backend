@@ -57,13 +57,11 @@ namespace UoM_Server.Controllers
             res.type = type;
             res.name = name;
 
-            //string req = WriteObjToJSON<Resource>(res);
             string req = Util.WriteObjToJSON<Resource>(res);
             HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "POST", "https://staging.e-pn.io/resources", req);
             string json = SendRequest(request);
             Resource resultRes = Util.ReadObjFromJSON<Resource>(json);
             return resultRes;
-
         }
 
         public Resource GetResource(string resourceUri)
@@ -156,8 +154,9 @@ namespace UoM_Server.Controllers
 
         #region Task
 
-        public GNTaskResponse CreateNewTask(string token, Priority priority, string resource)
+        public GNTaskResponse CreateNewTask(Priority priority, string resource)
         {
+            string token = GetToken();
             GNTaskRequest req = new GNTaskRequest();
             req.priority = priority.ToString();
             req.type = "GenerateClimateInfo";
@@ -167,21 +166,24 @@ namespace UoM_Server.Controllers
             string json = PostWithToken(token, Config.Gateway_Node_Domain + "/tasks", body);
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
         }
-        public GNTaskResponse GetTask(string token, string id)
+        public GNTaskResponse GetTask(string id)
         {
+            string token = GetToken();
             string json = GetWithToken(token, Config.Gateway_Node_Domain + "/tasks/" + id);
+
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
         }
 
-        public string RemoveTask(string token, string id)
+        public string RemoveTask(string id)
         {
+            string token = GetToken();
             string response = DeleteWithToken(token, Config.Gateway_Node_Domain + "/tasks/" + id);
             return response;
         }
 
         public string GetToken()
         {
-            HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "GET", Config.Tracker_Node_Domain + Config.getToken_API, "");
+            HttpWebRequest request = EratosSignedRequest(Config.accessId, Config.accessSecret, "GET", Config.Tracker_Node_Domain + "token/node", "");
             string json = SendRequest(request);
             TokenNodeResponse tokenResponse = Util.ReadObjFromJSON<TokenNodeResponse>(json);
             return tokenResponse.token;

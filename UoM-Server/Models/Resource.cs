@@ -47,6 +47,30 @@ namespace UoM_Server.Models
 
     }
 
+    public struct ResourceTable
+    {
+        public int ResourceID { get; set; }
+        public string EratosResourceID { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
+        public string Policy { get; set; }
+        public string Geo { get; set; }
+        public string Meta { get; set; }
+
+        public ResourceTable(int resourceID, string eratosResourceID, string type, string name, DateTime date, string policy, string geo, string meta)
+        {
+            ResourceID = resourceID;
+            EratosResourceID = eratosResourceID;
+            Type = type;
+            Name = name;
+            Date = date;
+            Policy = policy;
+            Geo = geo;
+            Meta = meta;
+        }
+    }
+
     [DataContract]
     public class PersonResource : Resource
     {

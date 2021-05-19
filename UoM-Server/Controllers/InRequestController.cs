@@ -9,6 +9,8 @@ namespace UoM_Server.Controllers
 {
     class InRequestController
     {
+
+        #region Resource
         public string getResourceVersion(string resourceUri)
         {
             OutRequestController orc = new OutRequestController();
@@ -16,14 +18,34 @@ namespace UoM_Server.Controllers
             return versions;
         }
 
-        public string createTask(string userUri, string orderId, string moduleType, string name, string geometry, string priority)
+        #endregion
+
+        #region User
+
+
+        #endregion
+
+        #region Order
+
+
+        #endregion
+
+        #region Module
+
+
+        #endregion
+
+        #region Task
+
+        public string createTask(string userUri, int orderId, string moduleType, string name, string geometry, string priority)
         {
             try
             {
                 OutRequestController orc = new OutRequestController();
+                
                 Resource resource = orc.CreateResource(moduleType, name);
                 string geoResponse = orc.UpdateGeometry(resource.id, geometry);
-                string token = orc.GetToken();
+
                 Priority pri = Priority.Low;
                 switch (priority.ToLower())
                 {
@@ -41,10 +63,33 @@ namespace UoM_Server.Controllers
                         break;
                 }
 
-                GNTaskResponse taskResponse = orc.CreateNewTask(token, pri, resource.id);
+                GNTaskResponse taskResponse = orc.CreateNewTask(pri, resource.id);
 
-                DatabaseController dc = new DatabaseController();
-                dc.recordTask(taskResponse);
+                // Update database
+                try
+                {
+                    resource.geo = geometry;
+
+                    DatabaseController dc = new DatabaseController();
+                    // Get user id
+                    UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
+                    // Update Resource
+                    ResourceTable rscTable = Util.MAP_TO_TABLE(resource);
+                    bool rscResponse = dc.CreateResource(rscTable);
+                    int rscId = ((ResourceTable)dc.FindResource("EratosResourceID", rscTable.EratosResourceID)[0]).ResourceID;
+                    // Update Task
+                    TaskTable taskTable = Util.MAP_TO_TABLE(taskResponse, userTable.UserID, orderId);
+                    bool taskSucceeded = dc.CreateTask(taskTable);
+                    int taskId = ((TaskTable)dc.FindTask("EratosTaskID", taskTable.EratosTaskID)[0]).TaskID;
+                    // Update Association
+                    bool associationResponse = dc.CreateResourceTaskAssociation(rscId, taskId);
+
+                }
+                catch(Exception e)
+                {
+                    // Maybe write to logs
+                }
+
                 return $"Successfully created task {taskResponse.id}.";
             }
             catch(Exception e)
@@ -53,5 +98,7 @@ namespace UoM_Server.Controllers
             }
             
         }
+
+        #endregion
     }
 }
