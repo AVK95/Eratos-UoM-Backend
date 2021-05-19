@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Collections;
 using UoM_Server.Models;
+using Newtonsoft.Json;
 
 namespace UoM_Server.Controllers
 {
@@ -38,7 +41,84 @@ namespace UoM_Server.Controllers
         #endregion
 
         #region Module
+        public bool createModule(string moduleName, string schema)
+        {
+            bool resp = false;
+                try
+                {
 
+               
+                DatabaseController dc = new DatabaseController();
+                ArrayList moduleList = dc.FindModule("moduleschema", schema);
+                if (moduleList.Count == 0) {
+                    ModuleTable mod = new ModuleTable(0, moduleName, schema, false);
+                    resp = dc.CreateModule(mod);
+                }
+                else
+                {
+                    ModuleTable mod = (ModuleTable) moduleList[0];
+                    if (mod.ModuleName != moduleName) dc.UpdateModule(mod.ModuleID, "modulename", moduleName);
+                    if (mod.ModuleSchema != schema) dc.UpdateModule(mod.ModuleID, "moduleschema", schema);
+                    resp = true;
+                }
+                }
+                catch (Exception e)
+                {
+                // Maybe write to logs
+                Console.WriteLine(e);
+                return false;
+                }
+
+                return resp;
+        }
+
+        public string getActiveModule()
+        {
+            ArrayList resp = new ArrayList();
+            List<string> moduleList = new List<string>();
+            try
+            {     
+               DatabaseController dc = new DatabaseController();
+              
+               resp = dc.FindModule("isactive", "");
+            }
+            catch (Exception e)
+            {
+                // Maybe write to logs
+                Console.WriteLine(e);
+                return "failed";
+            }
+            foreach (ModuleTable module in resp)
+            {
+                moduleList.Add(Util.WriteObjToJSON(module));
+            }
+
+            return resp.Count == 0 ? "failed" : string.Join(",",moduleList);
+        }
+
+        public string getAllModule(int start, int end)
+        {
+            ArrayList resp = new ArrayList();
+            List<string> moduleList = new List<string>();
+            try
+            {
+                DatabaseController dc = new DatabaseController();
+
+                resp = dc.FindModule(start,end);
+            }
+            catch (Exception e)
+            {
+                // Maybe write to logs
+                Console.WriteLine(e);
+                return "failed";
+            }
+            foreach (ModuleTable module in resp)
+            {
+                moduleList.Add(Util.WriteObjToJSON(module));
+            }
+
+            return resp.Count == 0 ? "failed" : string.Join(",", moduleList);
+        }
 
         #endregion
 
