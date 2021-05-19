@@ -129,6 +129,60 @@ namespace UoM_Server.Controllers
             }
         }
 
+        public bool ModifyUser(UserTable userDetails)
+        {
+            if (!isConnected)
+                throw new EratosDBException("Disconnected from Database!");
+            if (isDuplicateUser(userDetails))
+                return false;
+
+            string command = null;
+            if (userDetails.Info != null)
+            {
+                command = "INSERT INTO [dbo].[User]([EratosUserID], [Email], [Name], [Auth0ID], [CreatedAt], [Info]) ";
+                command += "VALUES(@EratosUserID, @Email, @Name, @Auth0ID, @CreatedAt, @Info)";
+            }
+            else
+            {
+                command = "INSERT INTO [dbo].[User]([EratosUserID], [Email], [Name], [Auth0ID], [CreatedAt]) ";
+                command += "VALUES(@EratosUserID, @Email, @Name, @Auth0ID, @CreatedAt)";
+            }
+
+            try
+            {
+                SqlCommand sql = new SqlCommand(command, connection);
+                sql.Parameters.Add("@EratosUserID", SqlDbType.NVarChar);
+                sql.Parameters["@EratosUserID"].Value = userDetails.EratosUserID;
+
+                sql.Parameters.Add("@Email", SqlDbType.NVarChar);
+                sql.Parameters["@Email"].Value = userDetails.Email;
+
+                sql.Parameters.Add("@Name", SqlDbType.NVarChar);
+                sql.Parameters["@Name"].Value = userDetails.Name;
+
+                sql.Parameters.Add("@Auth0ID", SqlDbType.NVarChar);
+                sql.Parameters["@Auth0ID"].Value = userDetails.Auth0ID;
+
+                sql.Parameters.Add("@CreatedAt", SqlDbType.DateTime);
+                sql.Parameters["@CreatedAt"].Value = userDetails.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+                if (userDetails.Info != null)
+                {
+                    sql.Parameters.Add("@Info", SqlDbType.NVarChar);
+                    sql.Parameters["@Info"].Value = userDetails.Info;
+                }
+
+                SqlDataReader result = sql.ExecuteReader();
+                result.Close();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return false;
+            }
+        }
+
         //A fluid find user command that returns the user details based on any of the following inputs:
         //EratosUserID, Email, Auth0ID, UserID, name
         public ArrayList FindUser(string IdentifierType, string IdentifierValue)
@@ -149,6 +203,45 @@ namespace UoM_Server.Controllers
                 command += "[Name] = " + "\'" + IdentifierValue + "\'";
             else
                 throw new EratosDBException("Invalid Parameter \'Identifier Type or Value\'");
+
+            try
+            {
+                SqlCommand sql = new SqlCommand(command, connection);
+                SqlDataReader result = sql.ExecuteReader();
+
+                UserTable entry = new UserTable();
+                ArrayList results = new ArrayList();
+
+                while (result.Read())
+                {
+                    entry.UserID = result.GetInt32(0);
+                    entry.EratosUserID = result.GetString(1);
+                    entry.Email = result.GetString(2);
+                    entry.Name = result.GetString(3);
+                    entry.Auth0ID = result.GetString(4);
+                    entry.CreatedAt = result.GetDateTime(5);
+                    entry.Info = result.IsDBNull(6) ? null : result.GetString(6);
+
+                    results.Add(entry);
+                    entry = new UserTable();
+                }
+
+                result.Close();
+                return results;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                throw new EratosDBException("Unknown Error (possibly invalid command)");
+            }
+        }
+
+        public ArrayList AllUsers()
+        {
+            if (!isConnected)
+                throw new EratosDBException("Disconnected from Database!");
+
+            string command = "SELECT * FROM [User]";
 
             try
             {
@@ -242,6 +335,43 @@ namespace UoM_Server.Controllers
                 command += "[UserID] = " + "\'" + int.Parse(IdentifierValue) + "\'";
             else
                 throw new EratosDBException("Invalid Parameter \'Identifier Type or Value\'");
+
+            try
+            {
+                SqlCommand sql = new SqlCommand(command, connection);
+                SqlDataReader result = sql.ExecuteReader();
+
+                OrderTable entry = new OrderTable();
+                ArrayList results = new ArrayList();
+
+                while (result.Read())
+                {
+                    entry.OrderID = result.GetInt32(0);
+                    entry.Price = (float)result.GetDouble(1);
+                    entry.Status = result.GetString(2);
+                    entry.OrderTime = result.GetDateTime(3);
+                    entry.UserID = result.GetInt32(4);
+
+                    results.Add(entry);
+                    entry = new OrderTable();
+                }
+
+                result.Close();
+                return results;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                throw new EratosDBException("Unknown Error (possibly invalid command)");
+            }
+        }
+
+        public ArrayList AllOrders()
+        {
+            if (!isConnected)
+                throw new EratosDBException("Disconnected from Database!");
+
+            string command = "SELECT * FROM [Order]";
 
             try
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,11 +30,89 @@ namespace UoM_Server.Controllers
             UserTable userTable = Util.MAP_TO_TABLE(user, userName);
         }
 
+        public string modifyUser(User user)
+        {
+            try
+            {
+                OutRequestController orc = new OutRequestController();
+                string userName = ((PersonResource)orc.GetResource(user.info)).name;
+                UserTable userTable = Util.MAP_TO_TABLE(user, userName);
+                DatabaseController dc = new();
+                if (dc.ModifyUser(userTable))
+                {
+                    return "User info updated.";
+                }
+                else
+                {
+                    return "Unknown error.";
+                }
+                
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e}";
+            }
+        }
+
+        public string getUserInfo(string userUri)
+        {
+            try
+            {
+                DatabaseController dc = new DatabaseController();
+                UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
+                return $"User info for {userUri}: {userTable}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e}";
+            }
+        }
+
+        public string getAllUserInfo()
+        {
+            try
+            {
+                DatabaseController dc = new DatabaseController();
+                ArrayList userTables = dc.AllUsers();
+                return $"Info for all users: {userTables}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e}";
+            }
+        }
 
         #endregion
 
         #region Order
 
+        public string getOrderHistory(string userUri)
+        {
+            try
+            {
+                DatabaseController dc = new DatabaseController();
+                OrderTable orderTable = (OrderTable)dc.FindOrder("OrderID", userUri)[0];
+                return $"Orders by {userUri}: {orderTable}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e}";
+            }
+        }
+
+        public string getAllOrderHistory()
+        {
+            try
+            {
+                DatabaseController dc = new DatabaseController();
+                ArrayList orderTables = dc.AllOrders();
+                return $"Orders for all users: {orderTables}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e}";
+            }
+        }
 
         #endregion
 
