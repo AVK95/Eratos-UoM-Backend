@@ -40,17 +40,17 @@ namespace UoM_Server.Controllers
                 DatabaseController dc = new();
                 if (dc.ModifyUser(userTable))
                 {
-                    return "User info updated.";
+                    return "{" + $"\"Success\":\"True\",\"Message\":\"Success\"" + "}";
                 }
                 else
                 {
-                    return "Unknown error.";
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed updating user info.\"" + "}";
                 }
                 
             }
             catch (Exception e)
             {
-                return $"Error: {e}";
+                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed updating user info. {e}\"" + "}";
             }
         }
 
@@ -58,13 +58,19 @@ namespace UoM_Server.Controllers
         {
             try
             {
-                DatabaseController dc = new DatabaseController();
-                UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
-                return $"User info for {userUri}: {userTable}";
+                DatabaseController dc = new();
+                ArrayList UserInfoList = dc.FindUser("EratosUserID", userUri);
+                if (UserInfoList.Count! > 0)
+                {
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Error: User not found.\"" + "}";
+                }
+                UserTable userTable = (UserTable)UserInfoList[0];
+                string userInfo = Util.WriteObjToJSON(userTable);
+                return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{userInfo}\"" + "}";
             }
             catch (Exception e)
             {
-                return $"Error: {e}";
+                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed getting user info. {e}\"" + "}";
             }
         }
 
@@ -72,20 +78,31 @@ namespace UoM_Server.Controllers
         {
             try
             {
-                DatabaseController dc = new DatabaseController();
-                ArrayList userTables = dc.AllUsers();
-                return $"Info for all users: {userTables}";
+                DatabaseController dc = new();
+                ArrayList userTableList = dc.FindUser("EratosUserID", "...");
+                if (userTableList.Count! > 0)
+                {
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Error: No users found.\"" + "}";
+                }
+                List<string> userInfoList = new();
+                foreach (UserTable userTable in userTableList)
+                {
+                    userInfoList.Add(Util.WriteObjToJSON(userTable));
+                }
+                //foreach (UserTable userTable in userTableList)
+                //    ArrayList userTables = dc.AllUsers();
+                return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{string.Join(",", userInfoList)}\"" + "}";
             }
             catch (Exception e)
             {
-                return $"Error: {e}";
+                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed getting user info. {e}\"" + "}";
             }
         }
 
         #endregion
 
         #region Order
-
+        /*
         public string getOrderHistory(string userUri)
         {
             try
@@ -113,6 +130,7 @@ namespace UoM_Server.Controllers
                 return $"Error: {e}";
             }
         }
+        */
 
         #endregion
 

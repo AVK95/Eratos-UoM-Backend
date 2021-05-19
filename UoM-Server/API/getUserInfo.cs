@@ -24,7 +24,7 @@ namespace UoM_Server.API
 
             InRequestController irc = new InRequestController();
             string response = "";
-            if (userUri == "ALL")
+            if (userUri.ToLower() == "all")
             {
                 response = await Task.Run(() => irc.getAllUserInfo());
             }
@@ -34,7 +34,7 @@ namespace UoM_Server.API
             }
 
             string responseMessage = (string.IsNullOrEmpty(userUri))
-                ? "Please pass a valid userUri."
+                ? "{" + $"\"Success\":\"False\",\"Message\":\"Error: Invalid userUri.\"" + "}";
                 : $" {response} ";
             return new OkObjectResult(responseMessage);
         }

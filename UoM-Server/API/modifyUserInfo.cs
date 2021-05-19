@@ -28,7 +28,7 @@ namespace UoM_Server.API
             string response = await Task.Run(() => irc.modifyUser(user));
 
             string responseMessage = (string.IsNullOrEmpty(user))
-                ? "Please pass a valid userInfo JSON."
+                ? "{" + $"\"Success\":\"False\",\"Message\":\"Error: Invalid User Info JSON.\"" + "}";
                 : $" {response} ";
             return new OkObjectResult(responseMessage);
         }
