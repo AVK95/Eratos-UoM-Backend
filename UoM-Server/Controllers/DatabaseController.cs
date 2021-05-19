@@ -1283,6 +1283,28 @@ namespace UoM_Server.Controllers
             }
         }
 
+        public void DeleteResourceTaskAssociation(int resourceID, int taskID)
+        {
+            if (!isConnected)
+                throw new EratosDBException("Disconnected from Database!");
+
+            string command = "DELETE FROM [dbo].[ResourceTask] ";
+            command += "WHERE ResourceID = " + "\'" + resourceID.ToString() + "\' ";
+            command += "AND TaskID = " + "\'" + taskID.ToString() + "\'";
+
+            try
+            {
+                SqlCommand sql = new SqlCommand(command, connection);
+                SqlDataReader result = sql.ExecuteReader();
+                result.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                throw new EratosDBException("Unknown Error (possibly invalid command)");
+            }
+        }
+
         private bool isDuplicateRTAssociation(int ResourceID, int TaskID)
         {
             string command = "SELECT * FROM [ResourceTask] WHERE [ResourceID] = " + ResourceID.ToString() + " AND [TaskID] = " + TaskID.ToString();
@@ -1317,6 +1339,28 @@ namespace UoM_Server.Controllers
             {
                 Console.WriteLine(e.ToString());
                 return false;
+            }
+        }
+
+        public void DeleteResourceModuleAssociation(int resourceID, int moduleID)
+        {
+            if (!isConnected)
+                throw new EratosDBException("Disconnected from Database!");
+
+            string command = "DELETE FROM [dbo].[ResourceModule] ";
+            command += "WHERE ResourceID = " + "\'" + resourceID.ToString() + "\' ";
+            command += "AND ModuleID = " + "\'" + moduleID.ToString() + "\'";
+
+            try
+            {
+                SqlCommand sql = new SqlCommand(command, connection);
+                SqlDataReader result = sql.ExecuteReader();
+                result.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                throw new EratosDBException("Unknown Error (possibly invalid command)");
             }
         }
 
