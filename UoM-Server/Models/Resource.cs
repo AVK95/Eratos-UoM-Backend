@@ -77,6 +77,7 @@ namespace UoM_Server.Models
         [DataMember(Name = "description", EmitDefaultValue = false)]
         public string description { get; set; }
 
-
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        public string name { get; set; }
     }
 }

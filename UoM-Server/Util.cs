@@ -74,6 +74,13 @@ namespace UoM_Server
 
         #region Database Model Mapping Functions
 
+        public static UserTable MAP_TO_TABLE(User user, string userName)
+        {
+            DateTime now = DateTime.Now;
+            UserTable userTable = new UserTable(0, user.id, "", userName, user.auth0Id, now, user.info);
+            return userTable;
+        }
+
         public static ResourceTable MAP_TO_TABLE(Resource rsc)
         {
             DateTime now = DateTime.Now;

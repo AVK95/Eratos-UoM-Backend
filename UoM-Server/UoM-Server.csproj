@@ -516,6 +516,7 @@
   <ItemGroup>
     <Compile Include="API\createTask.cs" />
     <Compile Include="API\getResourceVersion.cs" />
+    <Compile Include="API\userRegister.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Controllers\DatabaseController.cs" />
     <Compile Include="Controllers\InRequestController.cs" />

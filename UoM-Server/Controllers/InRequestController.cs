@@ -22,6 +22,13 @@ namespace UoM_Server.Controllers
 
         #region User
 
+        public string createUser(User user)
+        {
+            OutRequestController orc = new OutRequestController();
+            string userName = ((PersonResource)orc.GetResource(user.info)).name;
+            UserTable userTable = Util.MAP_TO_TABLE(user, userName);
+        }
+
 
         #endregion
 
