@@ -50,10 +50,11 @@ namespace UoM_Server.Models
     {
         public int TaskID { get; set; }
         public string EratosTaskID { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime LastUpdatedAt { get; set; }
-        public DateTime StartedAt { get; set; }
-        public DateTime EndedAt { get; set; }
+        public string CreatedAt { get; set; }
+        public string LastUpdatedAt { get; set; }
+        public string StartedAt { get; set; }
+        public string EndedAt { get; set; }
+        public string Name { get; set; }
         public string Priority { get; set; }
         public string State { get; set; }
         public string Type { get; set; }
@@ -62,7 +63,7 @@ namespace UoM_Server.Models
         public int UserID { get; set; }
         public int OrderID { get; set; }
 
-        public TaskTable(int taskID, string eratosTaskID, DateTime createdAt, DateTime lastUpdatedAt, DateTime startedAt, DateTime endedAt, string priority, string state, string type, string meta, string error, int userID, int orderID)
+        public TaskTable(int taskID, string eratosTaskID, string createdAt, string lastUpdatedAt, string startedAt, string endedAt, string name, string priority, string state, string type, string meta, string error, int userID, int orderID)
         {
             TaskID = taskID;
             EratosTaskID = eratosTaskID;
@@ -70,6 +71,7 @@ namespace UoM_Server.Models
             LastUpdatedAt = lastUpdatedAt;
             StartedAt = startedAt;
             EndedAt = endedAt;
+            Name = name;
             Priority = priority;
             State = state;
             Type = type;

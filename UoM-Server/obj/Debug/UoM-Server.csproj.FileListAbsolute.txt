@@ -242,3 +242,10 @@ C:\Users\sutok\source\repos\Eratos-UoM-Backend\UoM-Server\bin\Debug\pt-BR\Micros
 C:\Users\sutok\source\repos\Eratos-UoM-Backend\UoM-Server\bin\Debug\ru\Microsoft.Data.SqlClient.resources.dll
 C:\Users\sutok\source\repos\Eratos-UoM-Backend\UoM-Server\bin\Debug\zh-Hans\Microsoft.Data.SqlClient.resources.dll
 C:\Users\sutok\source\repos\Eratos-UoM-Backend\UoM-Server\bin\Debug\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+C:\Users\Aditya\Source\Repos\Eratos-UoM-Backend\UoM-Server\obj\Debug\UoM-Server.csprojAssemblyReference.cache
+C:\Users\Aditya\Source\Repos\Eratos-UoM-Backend\UoM-Server\obj\Debug\UoM_Server.ServerGUI.resources
+C:\Users\Aditya\Source\Repos\Eratos-UoM-Backend\UoM-Server\obj\Debug\UoM_Server.Properties.Resources.resources
+C:\Users\Aditya\Source\Repos\Eratos-UoM-Backend\UoM-Server\obj\Debug\UoM-Server.csproj.GenerateResource.cache
+C:\Users\Aditya\Source\Repos\Eratos-UoM-Backend\UoM-Server\obj\Debug\UoM-Server.csproj.CoreCompileInputs.cache
+C:\Users\Aditya\Source\Repos\Eratos-UoM-Backend\UoM-Server\obj\Debug\UoM-Server.exe
+C:\Users\Aditya\Source\Repos\Eratos-UoM-Backend\UoM-Server\obj\Debug\UoM-Server.pdb

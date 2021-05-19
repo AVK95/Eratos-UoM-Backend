@@ -38,10 +38,11 @@ namespace UoM_Server.Models
         public string Email { get; set; }
         public string Name { get; set; }
         public string Auth0ID { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
         public string Info { get; set; }
+        public bool isAdmin { get; set; }
 
-        public UserTable(int userID, string eratosUserID, string email, string name, string auth0ID, DateTime createdAt, string info)
+        public UserTable(int userID, string eratosUserID, string email, string name, string auth0ID, string createdAt, string info, bool isAdmin)
         {
             UserID = userID;
             EratosUserID = eratosUserID;
@@ -50,6 +51,7 @@ namespace UoM_Server.Models
             Auth0ID = auth0ID;
             CreatedAt = createdAt;
             Info = info;
+            this.isAdmin = isAdmin;
         }
     }
 }

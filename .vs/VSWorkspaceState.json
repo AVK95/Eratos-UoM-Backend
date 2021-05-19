@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\UoM-Server"
+    "\\UoM-Server",
+    "\\UoM-Server\\Controllers",
+    "\\UoM-Server\\Models"
   ],
   "SelectedNode": "\\UoM-Server\\UoM-Server.sln",
   "PreviewInSolutionExplorer": false
