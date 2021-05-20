@@ -80,7 +80,7 @@ namespace UoM_Server.Controllers
             {     
                DatabaseController dc = new DatabaseController();
               
-               resp = dc.FindModule("isactive", "");
+               resp = dc.FindModule("isactive", "true");
             }
             catch (Exception e)
             {
