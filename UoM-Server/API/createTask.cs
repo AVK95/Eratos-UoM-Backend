@@ -22,6 +22,7 @@ namespace API
             string paymentID = req.Query["paymentID"];
             string price = req.Query["price"];
             string moduleType = req.Query["moduleType"];
+            string taskType = req.Query["taskType"];
             string name = req.Query["name"];
             string geometry = req.Query["geometry"];
             string priority = req.Query["priority"];
@@ -36,9 +37,10 @@ namespace API
             name = name ?? data?.name;
             geometry = geometry ?? data?.geometry;
             priority = priority ?? data?.priority;
+            taskType = taskType ?? data?.taskType;
 
             InRequestController irc = new InRequestController();
-            string response = await Task.Run(() => irc.createTask(userUri, paymentID, price, moduleType,name,geometry,priority));
+            string response = await Task.Run(() => irc.createTask(userUri, paymentID, price, moduleType,taskType,name,geometry,priority));
 
             string errorMessage = "Invalid request. Missing parameters. Parameters: userUri, paymentID, price, moduleType, name, geometry, priority";
             string responseMessage = (string.IsNullOrEmpty(userUri) || string.IsNullOrEmpty(paymentID) || string.IsNullOrEmpty(moduleType) || 

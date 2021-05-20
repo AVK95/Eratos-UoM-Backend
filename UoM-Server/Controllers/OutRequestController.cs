@@ -152,12 +152,12 @@ namespace UoM_Server.Controllers
 
         #region Task
 
-        public GNTaskResponse CreateNewTask(Priority priority, string resource)
+        public GNTaskResponse CreateNewTask(Priority priority, string resource, string type)
         {
             string token = GetToken();
             GNTaskRequest req = new GNTaskRequest();
             req.priority = priority.ToString();
-            req.type = "GenerateClimateInfo";
+            req.type = type;
             req.meta = new GNTaskMeta();
             req.meta.resource = resource;
             byte[] body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<GNTaskRequest>(req));
@@ -177,11 +177,15 @@ namespace UoM_Server.Controllers
             DatabaseController dc = new DatabaseController();
             ArrayList queuedList = dc.FindTask("state", "Queued");
             ArrayList processingList = dc.FindTask("state", "Processing");
+
             if (queuedList.Count != 0 || processingList.Count != 0)
             {
                 try
                 {
-                    foreach (TaskTable taskTable in queuedList)
+                    ArrayList list = new ArrayList();
+                    list.AddRange(queuedList);
+                    list.AddRange(processingList);
+                    foreach (TaskTable taskTable in list)
                     {
                         GNTaskResponse task = GetTask(taskTable.EratosTaskID);
                         dc.UpdateTask(taskTable.TaskID, "State", task.state);
@@ -190,17 +194,11 @@ namespace UoM_Server.Controllers
                         {
                             dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
                             dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
-                        }
-                    }
-                    foreach (TaskTable taskTable in processingList)
-                    {
-                        GNTaskResponse task = GetTask(taskTable.EratosTaskID);
-                        dc.UpdateTask(taskTable.TaskID, "State", task.state);
-                        dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt);
-                        if (task.state == "Complete" || task.state == "Error")
-                        {
-                            dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
-                            dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
+                            // Update the policy
+                            UserTable userTable = (UserTable)dc.FindUser("UserID", taskTable.UserID.ToString())[0];
+                            ResourceTable rscTable = (ResourceTable)dc.FindResource("EratosResourceID", taskTable.Meta)[0];
+                            ResourcePolicy rscPolicy = GetPolicy(rscTable.Policy);
+                            string policyResponse = AddUserToPolicy(rscPolicy, userTable.EratosUserID);
                         }
                     }
                 }

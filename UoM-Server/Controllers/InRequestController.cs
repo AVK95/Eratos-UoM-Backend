@@ -202,7 +202,7 @@ namespace UoM_Server.Controllers
 
         #region Task & Order
 
-        public string createTask(string userUri, string paymentID, string price, string moduleType, string name, string geometry, string priority)
+        public string createTask(string userUri, string paymentID, string price, string moduleType, string taskType, string name, string geometry, string priority)
         {
             try
             {
@@ -228,7 +228,7 @@ namespace UoM_Server.Controllers
                         break;
                 }
 
-                GNTaskResponse taskResponse = orc.CreateNewTask(pri, resource.id);
+                GNTaskResponse taskResponse = orc.CreateNewTask(pri, resource.id, taskType);
 
                 // Update database
                 try
