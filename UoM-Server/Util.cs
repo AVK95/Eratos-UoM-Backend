@@ -77,21 +77,20 @@ namespace UoM_Server
         public static UserTable MAP_TO_TABLE(User user, string userName)
         {
             DateTime now = DateTime.Now;
-            UserTable userTable = new UserTable(0, user.id, "", userName, user.auth0Id, now, user.info);
+            UserTable userTable = new UserTable(0, user.id, "", userName, user.auth0Id, now.ToString(), user.info,false);
             return userTable;
         }
 
         public static ResourceTable MAP_TO_TABLE(Resource rsc)
         {
             DateTime now = DateTime.Now;
-            ResourceTable rscTable = new ResourceTable(0, rsc.id, rsc.type,rsc.name, now, rsc.policy, rsc.geo, rsc.data);
+            ResourceTable rscTable = new ResourceTable(0, rsc.id, rsc.type,rsc.name, now.ToString(), rsc.policy, rsc.geo, rsc.data);
             return rscTable;
         }
 
-        public static TaskTable MAP_TO_TABLE(GNTaskResponse task, int userUri, int orderId)
+        public static TaskTable MAP_TO_TABLE(GNTaskResponse task, int userUri, int orderId, string name)
         {
-            DateTime now = DateTime.Now;
-            TaskTable taskTable = new TaskTable(0, task.id, now, DateTime.Parse(task.lastUpdatedAt), DateTime.Parse(task.startedAt), DateTime.Parse(task.endedAt), task.priority, task.state, task.type, task.meta.resource, task.error, userUri, orderId);
+            TaskTable taskTable = new TaskTable(0, task.id, task.createdAt, task.lastUpdatedAt, task.startedAt, task.endedAt, task.priority,name, task.state, task.type, task.meta.resource, task.error, userUri, orderId);
             return taskTable;
         }
         #endregion

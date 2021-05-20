@@ -7,10 +7,7 @@ using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 using System.IO;
 using System.Text.Json;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.IO.Compression;
-using System.Text.Json.Serialization;
+using System.Collections;
 using System.Text;
 using System.Collections.Generic;
 using UoM_Server.Models;
@@ -21,6 +18,7 @@ namespace UoM_Server.Controllers
 
     class OutRequestController
     {
+
         static string SendRequest(HttpWebRequest request)
         {
             try
@@ -172,6 +170,46 @@ namespace UoM_Server.Controllers
             string json = GetWithToken(token, Config.Gateway_Node_Domain + "/tasks/" + id);
 
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
+        }
+
+        public bool SyncTasksAndOrders()
+        {
+            DatabaseController dc = new DatabaseController();
+            ArrayList queuedList = dc.FindTask("state", "Queued");
+            ArrayList processingList = dc.FindTask("state", "Processing");
+            if (queuedList.Count != 0 || processingList.Count != 0)
+            {
+                try
+                {
+                    foreach (TaskTable taskTable in queuedList)
+                    {
+                        GNTaskResponse task = GetTask(taskTable.EratosTaskID);
+                        dc.UpdateTask(taskTable.TaskID, "State", task.state);
+                        dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt);
+                        if (task.state == "Complete" || task.state == "Error")
+                        {
+                            dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
+                            dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
+                        }
+                    }
+                    foreach (TaskTable taskTable in processingList)
+                    {
+                        GNTaskResponse task = GetTask(taskTable.EratosTaskID);
+                        dc.UpdateTask(taskTable.TaskID, "State", task.state);
+                        dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt);
+                        if (task.state == "Complete" || task.state == "Error")
+                        {
+                            dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
+                            dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public string RemoveTask(string id)

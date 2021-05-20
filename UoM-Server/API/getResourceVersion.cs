@@ -26,8 +26,9 @@ namespace API
             InRequestController irc = new InRequestController();
             string versions = await Task.Run(() => irc.getResourceVersion(resourceUri));
 
+            string errorMessage = "Please pass a valid resourceUri (not a resource id)";
             string responseMessage = (string.IsNullOrEmpty(resourceUri))
-                ? "Please pass a valid resourceUri (not a resource id)"
+                ? "{" + $"\"Success\":\"False\",\"Message\":\"{errorMessage}\"" + "}"
                 : $" {versions} ";
             return new OkObjectResult(responseMessage);
         }

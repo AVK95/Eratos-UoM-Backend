@@ -53,12 +53,12 @@ namespace UoM_Server.Models
         public string EratosResourceID { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
         public string Policy { get; set; }
         public string Geo { get; set; }
         public string Meta { get; set; }
 
-        public ResourceTable(int resourceID, string eratosResourceID, string type, string name, DateTime date, string policy, string geo, string meta)
+        public ResourceTable(int resourceID, string eratosResourceID, string type, string name, string date, string policy, string geo, string meta)
         {
             ResourceID = resourceID;
             EratosResourceID = eratosResourceID;
@@ -71,13 +71,4 @@ namespace UoM_Server.Models
         }
     }
 
-    [DataContract]
-    public class PersonResource : Resource
-    {
-        [DataMember(Name = "description", EmitDefaultValue = false)]
-        public string description { get; set; }
-
-        [DataMember(Name = "name", EmitDefaultValue = false)]
-        public string name { get; set; }
-    }
 }

@@ -514,8 +514,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\getUserInfo.cs" />
+    <Compile Include="API\updateUserInfo.cs" />
+    <Compile Include="API\createModifyModule.cs" />
     <Compile Include="API\createTask.cs" />
+    <Compile Include="API\getActiveModules.cs" />
+    <Compile Include="API\getAllModules.cs" />
     <Compile Include="API\getResourceVersion.cs" />
+    <Compile Include="API\getTasksOrdersOfUser.cs" />
     <Compile Include="API\userRegister.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Controllers\DatabaseController.cs" />

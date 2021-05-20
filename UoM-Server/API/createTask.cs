@@ -19,7 +19,8 @@ namespace API
         {
             log.LogInformation("Create a new task.");
             string userUri = req.Query["userUri"];
-            string orderId = req.Query["orderId"];
+            string paymentID = req.Query["paymentID"];
+            string price = req.Query["price"];
             string moduleType = req.Query["moduleType"];
             string name = req.Query["name"];
             string geometry = req.Query["geometry"];
@@ -29,18 +30,20 @@ namespace API
             dynamic data = JsonConvert.DeserializeObject(requestBody);
 
             userUri = userUri ?? data?.userUri;
-            orderId = orderId ?? data?.orderId;
+            paymentID = paymentID ?? data?.paymentId;
+            price = price ?? data?.price;
             moduleType = moduleType ?? data?.moduleType;
             name = name ?? data?.name;
             geometry = geometry ?? data?.geometry;
             priority = priority ?? data?.priority;
 
             InRequestController irc = new InRequestController();
-            string response = await Task.Run(() => irc.createTask(userUri,int.Parse(orderId),moduleType,name,geometry,priority));
+            string response = await Task.Run(() => irc.createTask(userUri, paymentID, price, moduleType,name,geometry,priority));
 
-            string responseMessage = (string.IsNullOrEmpty(userUri) || string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(moduleType) || 
-                string.IsNullOrEmpty(name) || string.IsNullOrEmpty(geometry) || string.IsNullOrEmpty(priority))
-                ? "Invalid request. Missing parameters. Parameters: userUri, orderId, moduleType, name, geometry, priority"
+            string errorMessage = "Invalid request. Missing parameters. Parameters: userUri, paymentID, price, moduleType, name, geometry, priority";
+            string responseMessage = (string.IsNullOrEmpty(userUri) || string.IsNullOrEmpty(paymentID) || string.IsNullOrEmpty(moduleType) || 
+                string.IsNullOrEmpty(name) || string.IsNullOrEmpty(geometry) || string.IsNullOrEmpty(priority)|| string.IsNullOrEmpty(price))
+                ? "{" + $"\"Success\":\"False\",\"Message\":\"{errorMessage}\"" + "}"
                 : $" {response} ";
             return new OkObjectResult(responseMessage);
         }
