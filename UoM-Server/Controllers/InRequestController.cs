@@ -51,25 +51,51 @@ namespace UoM_Server.Controllers
                 DatabaseController dc = new DatabaseController();
                 ArrayList moduleList = dc.FindModule("moduleschema", moduleSchema);
                 if (moduleList.Count == 0) {
-                    ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, isActive.CompareTo("true")==0);
+                    ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, bool.Parse(isActive));
                     resp = dc.CreateModule(mod);
                 }
-                else
-                {
-                    ModuleTable mod = (ModuleTable) moduleList[0];
-                    if (mod.ModuleName != moduleName) dc.UpdateModule(mod.ModuleID, "modulename", moduleName);
-                    if (mod.ModuleSchema != moduleSchema) dc.UpdateModule(mod.ModuleID, "moduleschema", moduleSchema);
-                    resp = true;
-                }
+
                 }
                 catch (Exception e)
                 {
                 // Maybe write to logs
                 Console.WriteLine(e);
-                return false;
+                return resp;
                 }
 
                 return resp;
+        }
+
+        public bool modifyModule(string moduleId, string moduleName, string moduleSchema, string isActive)
+        {
+            bool resp = false;
+            try
+            {
+
+
+                DatabaseController dc = new DatabaseController();
+                ArrayList moduleList = dc.FindModule("moduleid", moduleId);
+                if (moduleList.Count == 0)
+                {
+                    return resp;
+                }
+                else
+                {
+                    ModuleTable mod = (ModuleTable)moduleList[0];
+                    if (mod.ModuleName.CompareTo(moduleName) != 0) dc.UpdateModule(mod.ModuleID, "modulename", moduleName);
+                    if (mod.ModuleSchema.CompareTo(moduleSchema) != 0) dc.UpdateModule(mod.ModuleID, "moduleschema", moduleSchema);
+                    if (!mod.isActive.Equals(bool.Parse(isActive))) dc.UpdateModule(mod.ModuleID, "isactive", isActive);
+                    resp = true;
+                }
+            }
+            catch (Exception e)
+            {
+                // Maybe write to logs
+                Console.WriteLine(e);
+                return resp;
+            }
+
+            return resp;
         }
 
         public string getActiveModule()
