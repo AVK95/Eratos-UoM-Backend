@@ -13,7 +13,7 @@ namespace UoM_Server.API
 {
     public static class newModule
     {
-        [FunctionName("newModule")]
+        [FunctionName("createModifyModule")]
         public static async Task<IActionResult> Run(
            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
            ILogger log)
