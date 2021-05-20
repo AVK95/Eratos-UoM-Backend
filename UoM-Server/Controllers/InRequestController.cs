@@ -77,7 +77,7 @@ namespace UoM_Server.Controllers
                 {
                     userInfoList.Add(Util.WriteObjToJSON(userTable));
                 }
-                return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{string.Join(",", userInfoList)}\"" + "}";
+                return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{string.Join("|", userInfoList)}\"" + "}";
             }
             catch (Exception e)
             {
@@ -115,11 +115,6 @@ namespace UoM_Server.Controllers
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed to update user info. {e}\"" + "}";
             }
         }
-        #endregion
-
-        #region Order
-
-
         #endregion
 
         #region Module
@@ -176,7 +171,7 @@ namespace UoM_Server.Controllers
                 moduleList.Add(Util.WriteObjToJSON(module));
             }
 
-            return resp.Count == 0 ? "failed" : string.Join(",", moduleList);
+            return resp.Count == 0 ? "failed" : string.Join("|", moduleList);
         }
 
         public string getAllModules(int start, int end)
@@ -200,12 +195,12 @@ namespace UoM_Server.Controllers
                 moduleList.Add(Util.WriteObjToJSON(module));
             }
 
-            return resp.Count == 0 ? "failed" : string.Join(",", moduleList);
+            return resp.Count == 0 ? "failed" : string.Join("|", moduleList);
         }
 
         #endregion
 
-        #region Task
+        #region Task & Order
 
         public string createTask(string userUri, string paymentID, string price, string moduleType, string name, string geometry, string priority)
         {
@@ -292,7 +287,7 @@ namespace UoM_Server.Controllers
                 {
                     orderResultList.Add(Util.WriteObjToJSON(orderTable));
                 }
-                return "{" + $"\"Success\":\"True\",\"Tasks\":\"{string.Join(",",taskResultList)}\",\"Orders\":\"{string.Join(",",orderResultList)}\"" + "}";
+                return "{" + $"\"Success\":\"True\",\"Tasks\":\"{string.Join("|",taskResultList)}\",\"Orders\":\"{string.Join("|",orderResultList)}\"" + "}";
             }
             catch(Exception e)
             {
