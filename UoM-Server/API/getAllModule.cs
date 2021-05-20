@@ -19,12 +19,12 @@ namespace UoM_Server.API
           ILogger log)
         {
             log.LogInformation("Get all module.");
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            int start = data?.start;
-            int end = data?.end;
+            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            //dynamic data = JsonConvert.DeserializeObject(requestBody);
+            string start = req.Query["start"];
+            string end = req.Query["end"];
             InRequestController irc = new InRequestController();
-            string resp = await Task.Run(() => irc.getAllModule(start,end));
+            string resp = await Task.Run(() => irc.getAllModule(int.Parse(start),int.Parse(end)));
             string respToFE;
             if (resp.ToLower().CompareTo("false") == 0 )
             {

@@ -20,13 +20,14 @@ namespace UoM_Server.API
         {
             log.LogInformation("Create new module.");
             //string resourceUri = req.Query["resourceUri"];
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string schema = data?.schema;
-            string moduleName = data?.moduleName;
+            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            //dynamic data = JsonConvert.DeserializeObject(requestBody);
+            string schema = req.Query["moduleSchema"];
+            string moduleName = req.Query["moduleName"];
+            string isActive = req.Query["isActive"];
             // Functions to call eratos server
             InRequestController irc = new InRequestController();
-            bool resp = await Task.Run(() => irc.createModule(moduleName,schema));
+            bool resp = await Task.Run(() => irc.createModule(moduleName,schema,isActive));
 
             string responseMessage = (resp)
                 ? "{" + "\"Success\": \"True\"}" +"}"

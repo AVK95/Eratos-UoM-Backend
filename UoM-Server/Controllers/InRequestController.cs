@@ -41,7 +41,7 @@ namespace UoM_Server.Controllers
         #endregion
 
         #region Module
-        public bool createModule(string moduleName, string schema)
+        public bool createModule(string moduleName, string moduleSchema, string isActive)
         {
             bool resp = false;
                 try
@@ -49,16 +49,16 @@ namespace UoM_Server.Controllers
 
                
                 DatabaseController dc = new DatabaseController();
-                ArrayList moduleList = dc.FindModule("moduleschema", schema);
+                ArrayList moduleList = dc.FindModule("moduleschema", moduleSchema);
                 if (moduleList.Count == 0) {
-                    ModuleTable mod = new ModuleTable(0, moduleName, schema, false);
+                    ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, isActive.CompareTo("true")==0);
                     resp = dc.CreateModule(mod);
                 }
                 else
                 {
                     ModuleTable mod = (ModuleTable) moduleList[0];
                     if (mod.ModuleName != moduleName) dc.UpdateModule(mod.ModuleID, "modulename", moduleName);
-                    if (mod.ModuleSchema != schema) dc.UpdateModule(mod.ModuleID, "moduleschema", schema);
+                    if (mod.ModuleSchema != moduleSchema) dc.UpdateModule(mod.ModuleID, "moduleschema", moduleSchema);
                     resp = true;
                 }
                 }

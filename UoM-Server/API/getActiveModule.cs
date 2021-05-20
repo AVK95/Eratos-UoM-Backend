@@ -13,12 +13,12 @@ namespace UoM_Server.API
 {
     public static class getActiveModule
     {
-        [FunctionName("newModule")]
+        [FunctionName("getActiveModule")]
         public static async Task<IActionResult> Run(
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
           ILogger log)
         {
-            log.LogInformation("Get all module.");
+            log.LogInformation("Get active module.");
 
             InRequestController irc = new InRequestController();
             string resp = await Task.Run(() => irc.getActiveModule());
