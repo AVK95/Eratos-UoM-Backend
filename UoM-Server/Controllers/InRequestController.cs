@@ -119,7 +119,7 @@ namespace UoM_Server.Controllers
                 moduleList.Add(Util.WriteObjToJSON(module));
             }
 
-            return resp.Count == 0 ? "failed" : string.Join(",",moduleList);
+            return resp.Count == 0 ? "failed" : string.Join("|",moduleList);
         }
 
         public string getAllModule(int start, int end)
@@ -143,7 +143,7 @@ namespace UoM_Server.Controllers
                 moduleList.Add(Util.WriteObjToJSON(module));
             }
 
-            return resp.Count == 0 ? "failed" : string.Join(",", moduleList);
+            return resp.Count == 0 ? "failed" : string.Join("|", moduleList);
         }
 
         #endregion
