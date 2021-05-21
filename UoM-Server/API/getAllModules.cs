@@ -18,23 +18,31 @@ namespace UoM_Server.API
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
           ILogger log)
         {
-            log.LogInformation("Get all module.");
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string start = req.Query["start"];
-            string end = req.Query["end"];
-            InRequestController irc = new InRequestController();
-            string resp = await Task.Run(() => irc.getAllModules(int.Parse(start), int.Parse(end)));
-            string respToFE;
-            if (resp.ToLower().CompareTo("false") == 0)
+            try
             {
-                respToFE = "{" + "\"Success\": \"False\",\"Modules\":\"\"" + "}";
+                log.LogInformation("Get all modules.");
+
+                string start = req.Query["start"];
+                string end = req.Query["end"];
+
+                string responseMessage;
+                if (string.IsNullOrEmpty(start) || string.IsNullOrEmpty(end))
+                {
+                    responseMessage = "{" + "\"Success\": \"False\",\"Message\":\"Missing parameters. Parameters: start, end\"" + "}";
+                }
+                else
+                {
+                    InRequestController irc = new InRequestController();
+                    responseMessage = await Task.Run(() => irc.getAllModules(int.Parse(start), int.Parse(end)));
+                }
+                return new OkObjectResult(responseMessage);
             }
-            else
+            catch
             {
-                respToFE = "{" + $"\"Success\": \"True\",\"Modules\":\"{resp}\"" + "}";
+                string responseMessage = "Server error. Please contact the administrator.";
+                return new BadRequestObjectResult(responseMessage);
             }
-            return new OkObjectResult(respToFE);
+            
         }
     }
 }

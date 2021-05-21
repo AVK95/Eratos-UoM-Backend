@@ -1390,7 +1390,7 @@ namespace UoM_Server.Controllers
 
             //dh.UpdateUser(2, "isadmin", "true");
             //dh.CreateUser(new UserTable(0, "demouser4", "demoemail4", "demoname4", "demoauth4", DateTime.Now.ToString(), null, false));
-            dh.DeleteUser(4);
+            //dh.DeleteUser(4);
 
             /*
             //bool response = dh.CreateOrder(new OrderTable(0, (float)19.65, "Unpaid", DateTime.Now, 3));

@@ -18,26 +18,33 @@ namespace UoM_Server.API
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("Get the information of a user or all users.");
-            string userUri = req.Query["userUri"];
-            string start = req.Query["start"];
-            string end = req.Query["end"];
-
-            InRequestController irc = new InRequestController();
-            string response = "";
-            if (userUri.ToLower() == "all")
+            try
             {
-                response = await Task.Run(() => irc.getAllUserInfo(int.Parse(start), int.Parse(end)));
-            }
-            else
-            {
-                response = await Task.Run(() => irc.getUserInfo(userUri));
-            }
+                log.LogInformation("Get the information of a user or all users.");
+                string userUri = req.Query["userUri"];
+                string start = req.Query["start"];
+                string end = req.Query["end"];
 
-            string responseMessage = (string.IsNullOrEmpty(userUri))
-                ? "{" + $"\"Success\":\"False\",\"Message\":\"Error: Invalid userUri.\"" + "}"
-                : $" {response} ";
-            return new OkObjectResult(responseMessage);
+                string responseMessage;
+                if (string.IsNullOrEmpty(userUri))
+                {
+                    responseMessage = "{" + $"\"Success\":\"False\",\"Message\":\"Missing parameters. Parameters: 1. userUri(can be userUri or all), if userUri=all, then 2. start, 3. end\"" + "}";
+                }
+                else
+                {
+                    InRequestController irc = new InRequestController();
+                    responseMessage = userUri.ToLower() == "all"
+                        ? await Task.Run(() => irc.getAllUserInfo(int.Parse(start), int.Parse(end)))
+                        : await Task.Run(() => irc.getUserInfo(userUri));
+                }
+                
+                return new OkObjectResult(responseMessage);
+            }
+            catch
+            {
+
+            }
+            
         }
     }
 }

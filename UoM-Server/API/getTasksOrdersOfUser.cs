@@ -17,22 +17,30 @@ namespace UoM_Server.API
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("Get information of a task.");
-            string userUri = req.Query["userUri"];
+            try
+            {
+                log.LogInformation("Get information of a task.");
+                string userUri = req.Query["userUri"];
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
 
-            userUri = userUri ?? data?.userUri;
+                userUri = userUri ?? data?.userUri;
 
-            InRequestController irc = new InRequestController();
-            string response = await Task.Run(() => irc.getTasksOrdersOfUser(userUri));
+                InRequestController irc = new InRequestController();
 
-            string errorMessage = "Invalid request. Missing parameters. Parameters: userUri, orderId, moduleType, name, geometry, priority";
-            string responseMessage = string.IsNullOrEmpty(userUri) 
-                ? "{" + $"\"Success\":\"False\",\"Message\":\"{errorMessage}\"" + "}"
-                : $" {response} ";
-            return new OkObjectResult(responseMessage);
+                string errorMessage = "Invalid request. Missing parameters. Parameters: userUri";
+                string responseMessage = string.IsNullOrEmpty(userUri)
+                    ? "{" + $"\"Success\":\"False\",\"Message\":\"{errorMessage}\"" + "}"
+                    : await Task.Run(() => irc.getTasksOrdersOfUser(userUri));
+
+                return new OkObjectResult(responseMessage);
+            }
+            catch
+            {
+                string responseMessage = "Server error. Please contact the administrator.";
+                return new BadRequestObjectResult(responseMessage);
+            }
         }
     }
 }

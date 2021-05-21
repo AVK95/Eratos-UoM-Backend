@@ -25,18 +25,22 @@ namespace UoM_Server.Controllers
 
         public string createUser(User user)
         {
+            DatabaseController dc = new DatabaseController();
+            
             OutRequestController orc = new OutRequestController();
             string userName = orc.GetResource(user.info).name;
 
             UserTable userTable = Util.MAP_TO_TABLE(user, userName);
             try
             {
-                DatabaseController dc = new DatabaseController();
+                dc.Connect();
                 bool response = dc.CreateUser(userTable);
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"True\",\"UserName\":\"{userName}\"" + "}";
             }
             catch (Exception e)
-            { 
+            {
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Create user failed. {e.Message}\"" + "}";
             }
             
@@ -44,32 +48,38 @@ namespace UoM_Server.Controllers
 
         public string getUserInfo(string userUri)
         {
+            DatabaseController dc = new DatabaseController();
             try
             {
-                DatabaseController dc = new DatabaseController();
+                dc.Connect();
                 ArrayList UserInfoList = dc.FindUser("EratosUserID", userUri);
                 if (UserInfoList.Count == 0)
                 {
+                    dc.Disconnect();
                     return "{" + $"\"Success\":\"False\",\"Message\":\"Error: User not found.\"" + "}";
                 }
                 UserTable userTable = (UserTable)UserInfoList[0];
                 string userInfo = Util.WriteObjToJSON(userTable);
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{userInfo}\"" + "}";
             }
             catch (Exception e)
             {
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed getting user info. {e}\"" + "}";
             }
         }
 
         public string getAllUserInfo(int start, int end)
         {
+            DatabaseController dc = new DatabaseController();
             try
             {
-                DatabaseController dc = new DatabaseController();
+                dc.Connect();
                 ArrayList userTableList = dc.FindUser(start, end);
                 if (userTableList.Count == 0)
                 {
+                    dc.Disconnect();
                     return "{" + $"\"Success\":\"False\",\"Message\":\"Error: No users found.\"" + "}";
                 }
                 List<string> userInfoList = new List<string>();
@@ -77,19 +87,22 @@ namespace UoM_Server.Controllers
                 {
                     userInfoList.Add(Util.WriteObjToJSON(userTable));
                 }
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{string.Join("|", userInfoList)}\"" + "}";
             }
             catch (Exception e)
             {
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed getting user info. {e}\"" + "}";
             }
         }
 
         public string updateUserInfo(UserTable userTable)
         {
+            DatabaseController dc = new DatabaseController();
             try
             {
-                DatabaseController dc = new DatabaseController();
+                dc.Connect();
                 UserTable oldUserTable = (UserTable)dc.FindUser("UserID", userTable.UserID.ToString())[0];
                 if(oldUserTable.Name != userTable.Name)
                 {
@@ -108,94 +121,97 @@ namespace UoM_Server.Controllers
                     dc.UpdateUser(userTable.UserID, "isAdmin", userTable.isAdmin.ToString());
                 }
 
+                dc.Disconnect();
                 return "{" + "\"Success\":\"True\",\"Message\":\"The user info is up to date.\"" + "}";
             }
             catch(Exception e)
             {
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed to update user info. {e}\"" + "}";
             }
         }
         #endregion
 
         #region Module
-        public bool createModifyModule(string moduleName, string moduleSchema, string isActive)
+        public string createModifyModule(string moduleName, string moduleSchema, string isActive)
         {
-            bool resp = false;
+            DatabaseController dc = new DatabaseController();
+            
             try
             {
-
-
-                DatabaseController dc = new DatabaseController();
+                dc.Connect();
                 ArrayList moduleList = dc.FindModule("moduleschema", moduleSchema);
                 if (moduleList.Count == 0)
                 {
-                    ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, isActive.CompareTo("true") == 0);
-                    resp = dc.CreateModule(mod);
+                    ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, bool.Parse(isActive));
+                    bool resp = dc.CreateModule(mod);
                 }
                 else
                 {
                     ModuleTable mod = (ModuleTable)moduleList[0];
                     if (mod.ModuleName != moduleName) dc.UpdateModule(mod.ModuleID, "modulename", moduleName);
                     if (mod.ModuleSchema != moduleSchema) dc.UpdateModule(mod.ModuleID, "moduleschema", moduleSchema);
-                    resp = true;
                 }
             }
             catch (Exception e)
             {
-                // Maybe write to logs
-                Console.WriteLine(e);
-                return false;
+                dc.Disconnect();
+                return "{" + $"\"Success\": \"False\",\"Message\":\"Could not create/modify the module. {e.Message}\"" + "}";
             }
-
-            return resp;
+            dc.Disconnect();
+            return "{" + "\"Success\": \"True\"" + "}";
         }
 
         public string getActiveModules()
         {
+            DatabaseController dc = new DatabaseController();
+
             ArrayList resp = new ArrayList();
             List<string> moduleList = new List<string>();
             try
             {
-                DatabaseController dc = new DatabaseController();
-
-                resp = dc.FindModule("isactive", "");
+                dc.Connect();
+                resp = dc.FindModule("isactive", "true");
             }
             catch (Exception e)
             {
-                // Maybe write to logs
-                Console.WriteLine(e);
-                return "failed";
+                dc.Disconnect();
+                return "{" + $"\"Success\": \"False\",\"Message\":\"Failed to get active modules. {e.Message}\"" + "}";
             }
             foreach (ModuleTable module in resp)
             {
                 moduleList.Add(Util.WriteObjToJSON(module));
             }
-
-            return resp.Count == 0 ? "failed" : string.Join("|", moduleList);
+            dc.Disconnect();
+            return resp.Count == 0 
+                ? "{" + "\"Success\": \"False\",\"Message\":\"No active module.\"" + "}"
+                : "{" + $"\"Success\": \"True\",\"Modules\":\"{string.Join("|", moduleList)}\"" + "}";
         }
 
         public string getAllModules(int start, int end)
         {
+            DatabaseController dc = new DatabaseController();
+
             ArrayList resp = new ArrayList();
             List<string> moduleList = new List<string>();
             try
             {
-                DatabaseController dc = new DatabaseController();
-
+                dc.Connect();
                 resp = dc.FindModule(start, end);
             }
             catch (Exception e)
             {
-                // Maybe write to logs
-                Console.WriteLine(e);
-                return "failed";
+                dc.Disconnect();
+                return "{" + $"\"Success\": \"False\",\"Message\":\"Database error. {e.Message}\"" + "}";
             }
             foreach (ModuleTable module in resp)
             {
                 moduleList.Add(Util.WriteObjToJSON(module));
             }
-
-            return resp.Count == 0 ? "failed" : string.Join("|", moduleList);
+            dc.Disconnect();
+            return resp.Count == 0 
+                ? "{" + "\"Success\": \"False\",\"Message\":\"No module has been created.\"" + "}"
+                : "{" + $"\"Success\": \"True\",\"Modules\":\"{string.Join("|", moduleList)}\"" + "}";
         }
 
         #endregion
@@ -204,6 +220,7 @@ namespace UoM_Server.Controllers
 
         public string createTask(string userUri, string paymentID, string price, string moduleType, string taskType, string name, string geometry, string priority)
         {
+            DatabaseController dc = new DatabaseController();
             try
             {
                 OutRequestController orc = new OutRequestController();
@@ -233,9 +250,10 @@ namespace UoM_Server.Controllers
                 // Update database
                 try
                 {
+                    dc.Connect();
+
                     resource.geo = geometry;
 
-                    DatabaseController dc = new DatabaseController();
                     // Get user id
                     UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
                     int userID = userTable.UserID;
@@ -253,13 +271,13 @@ namespace UoM_Server.Controllers
                     int taskID = ((TaskTable)dc.FindTask("EratosTaskID", taskTable.EratosTaskID)[0]).TaskID;
                     // Update Association
                     bool associationResponse = dc.CreateResourceTaskAssociation(rscID, taskID);
-
                 }
                 catch(Exception e)
                 {
-                    // Maybe write to logs
+                    dc.Disconnect();
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Database error. {e.Message}\"" + "}";
                 }
-
+                dc.Disconnect();
                 return "{" +$"\"Success\":\"True\",\"TaskID\":\"{taskResponse.id}\"" + "}";
             }
             catch(Exception e)
@@ -271,12 +289,14 @@ namespace UoM_Server.Controllers
 
         public string getTasksOrdersOfUser(string userUri)
         {
+            DatabaseController dc = new DatabaseController();
             try
             {
-                DatabaseController dc = new DatabaseController();
+                dc.Connect();
                 UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
                 ArrayList taskTableList = dc.FindTask("UserID", userTable.UserID.ToString());
                 ArrayList orderTableList = dc.FindOrder("UserID", userTable.UserID.ToString());
+                
                 List<string> taskResultList = new List<string>();
                 List<string> orderResultList = new List<string>();
                 foreach (TaskTable taskTable in taskTableList)
@@ -287,12 +307,23 @@ namespace UoM_Server.Controllers
                 {
                     orderResultList.Add(Util.WriteObjToJSON(orderTable));
                 }
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"True\",\"Tasks\":\"{string.Join("|",taskResultList)}\",\"Orders\":\"{string.Join("|",orderResultList)}\"" + "}";
             }
             catch(Exception e)
             {
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Get task failed. {e.Message}\"" + "}";
             }
+        }
+
+        public string syncTasksAndOrders()
+        {
+            OutRequestController orc = new OutRequestController();
+            bool success = orc.SyncTasksAndOrders();
+            return success
+                ? "{" + "\"Success\":\"True\",\"Message\":\"Database is up to date.\"" + "}"
+                : "{" + "\"Success\":\"False\",\"Message\":\"Sync error.\"" + "}";
         }
         #endregion
     }

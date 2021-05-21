@@ -175,38 +175,50 @@ namespace UoM_Server.Controllers
         public bool SyncTasksAndOrders()
         {
             DatabaseController dc = new DatabaseController();
-            ArrayList queuedList = dc.FindTask("state", "Queued");
-            ArrayList processingList = dc.FindTask("state", "Processing");
-
-            if (queuedList.Count != 0 || processingList.Count != 0)
+            try
             {
-                try
+                dc.Connect();
+                ArrayList queuedList = dc.FindTask("state", "Queued");
+                ArrayList processingList = dc.FindTask("state", "Processing");
+
+                if (queuedList.Count != 0 || processingList.Count != 0)
                 {
-                    ArrayList list = new ArrayList();
-                    list.AddRange(queuedList);
-                    list.AddRange(processingList);
-                    foreach (TaskTable taskTable in list)
+                    try
                     {
-                        GNTaskResponse task = GetTask(taskTable.EratosTaskID);
-                        dc.UpdateTask(taskTable.TaskID, "State", task.state);
-                        dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt);
-                        if (task.state == "Complete" || task.state == "Error")
+                        ArrayList list = new ArrayList();
+                        list.AddRange(queuedList);
+                        list.AddRange(processingList);
+                        foreach (TaskTable taskTable in list)
                         {
-                            dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
-                            dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
-                            // Update the policy
-                            UserTable userTable = (UserTable)dc.FindUser("UserID", taskTable.UserID.ToString())[0];
-                            ResourceTable rscTable = (ResourceTable)dc.FindResource("EratosResourceID", taskTable.Meta)[0];
-                            ResourcePolicy rscPolicy = GetPolicy(rscTable.Policy);
-                            string policyResponse = AddUserToPolicy(rscPolicy, userTable.EratosUserID);
+                            GNTaskResponse task = GetTask(taskTable.EratosTaskID);
+                            dc.UpdateTask(taskTable.TaskID, "State", task.state);
+                            dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt);
+                            if (task.state == "Complete" || task.state == "Error")
+                            {
+                                dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
+                                dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
+                                // Update the policy
+                                UserTable userTable = (UserTable)dc.FindUser("UserID", taskTable.UserID.ToString())[0];
+                                ResourceTable rscTable = (ResourceTable)dc.FindResource("EratosResourceID", taskTable.Meta)[0];
+                                ResourcePolicy rscPolicy = GetPolicy(rscTable.Policy);
+                                string policyResponse = AddUserToPolicy(rscPolicy, userTable.EratosUserID);
+                            }
                         }
                     }
-                }
-                catch(Exception e)
-                {
-                    return false;
+                    catch (Exception e)
+                    {
+                        dc.Disconnect();
+                        return false;
+                    }
                 }
             }
+            catch
+            {
+                dc.Disconnect();
+                return false;
+
+            }
+            dc.Disconnect();
             return true;
         }
 

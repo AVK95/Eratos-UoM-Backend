@@ -18,22 +18,32 @@ namespace UoM_Server.API
            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
            ILogger log)
         {
-            log.LogInformation("Create new module.");
-            //string resourceUri = req.Query["resourceUri"];
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string schema = req.Query["moduleSchema"];
-            string moduleName = req.Query["moduleName"];
-            string isActive = req.Query["isActive"];
-            // Functions to call eratos server
-            InRequestController irc = new InRequestController();
-            bool resp = await Task.Run(() => irc.createModifyModule(moduleName, schema, isActive));
+            try
+            {
+                log.LogInformation("Create new module.");
+                string schema = req.Query["moduleSchema"];
+                string moduleName = req.Query["moduleName"];
+                string isActive = req.Query["isActive"];
 
-            string responseMessage = (resp)
-                ? "{" + "\"Success\": \"True\"" + "}"
-                : "{" + "\"Success\": \"False\"" + "}";
-
-            return new OkObjectResult(responseMessage);
+                string responseMessage;
+                if (string.IsNullOrEmpty(schema) || string.IsNullOrEmpty(moduleName) || string.IsNullOrEmpty(isActive))
+                {
+                    responseMessage = "{" + "\"Success\": \"False\",\"Message\":\"Missing parameters. Parameters: schema, moduleName, isActive\"" + "}";
+                }
+                else
+                {
+                    // Functions to call eratos server
+                    InRequestController irc = new InRequestController();
+                    responseMessage = await Task.Run(() => irc.createModifyModule(moduleName, schema, isActive));
+                }
+                return new OkObjectResult(responseMessage);
+            }
+            catch
+            {
+                string responseMessage = "Server error. Please contact the administrator.";
+                return new BadRequestObjectResult(responseMessage);
+            }
+            
         }
     }
 }

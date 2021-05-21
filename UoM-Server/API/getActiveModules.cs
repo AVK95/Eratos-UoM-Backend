@@ -20,20 +20,21 @@ namespace UoM_Server.API
               [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
               ILogger log)
             {
-                log.LogInformation("Get active modules.");
+                try
+                {
+                    log.LogInformation("Get active modules.");
 
-                InRequestController irc = new InRequestController();
-                string resp = await Task.Run(() => irc.getActiveModules());
-                string respToFE;
-                if (resp.ToLower().CompareTo("false") == 0)
-                {
-                    respToFE = "{" + "\"Success\": \"False\",\"Modules\":\"\"" + "}";
+                    InRequestController irc = new InRequestController();
+                    string responseMessage = await Task.Run(() => irc.getActiveModules());
+
+                    return new OkObjectResult(responseMessage);
                 }
-                else
+                catch
                 {
-                    respToFE = "{" + $"\"Success\": \"True\",\"Modules\":\"{resp}\"" + "}";
+                    string responseMessage = "Server error. Please contact the administrator.";
+                    return new BadRequestObjectResult(responseMessage);
                 }
-                return new OkObjectResult(respToFE);
+                
             }
         }
     }

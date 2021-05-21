@@ -515,6 +515,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\getUserInfo.cs" />
+    <Compile Include="API\syncTasksAndOrders.cs" />
     <Compile Include="API\updateUserInfo.cs" />
     <Compile Include="API\createModifyModule.cs" />
     <Compile Include="API\createTask.cs" />
