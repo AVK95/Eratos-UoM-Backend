@@ -27,12 +27,13 @@ namespace UoM_Server.Controllers
         {
             DatabaseController dc = new DatabaseController();
             
-            OutRequestController orc = new OutRequestController();
-            string userName = orc.GetResource(user.info).name;
-
-            UserTable userTable = Util.MAP_TO_TABLE(user, userName);
             try
             {
+                OutRequestController orc = new OutRequestController();
+                string userName = orc.GetResource(user.info).name;
+
+                UserTable userTable = Util.MAP_TO_TABLE(user, userName);
+
                 dc.Connect();
                 bool response = dc.CreateUser(userTable);
                 dc.Disconnect();
@@ -170,6 +171,7 @@ namespace UoM_Server.Controllers
             List<string> moduleList = new List<string>();
             try
             {
+                
                 dc.Connect();
                 resp = dc.FindModule("isactive", "true");
             }

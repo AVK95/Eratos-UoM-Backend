@@ -42,7 +42,8 @@ namespace UoM_Server.API
             }
             catch
             {
-
+                string responseMessage = "Server error. Please contact the administrator.";
+                return new BadRequestObjectResult(responseMessage);
             }
             
         }
