@@ -259,6 +259,9 @@ namespace UoM_Server.Controllers
                     // Get user id
                     UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
                     int userID = userTable.UserID;
+                    // Get Module id
+                    ModuleTable moduleTable = (ModuleTable)dc.FindModule("ModuleSchema", resource.type)[0];
+                    int moduleID = moduleTable.ModuleID;
                     // Update Resource
                     ResourceTable rscTable = Util.MAP_TO_TABLE(resource);
                     bool rscResponse = dc.CreateResource(rscTable);
@@ -272,7 +275,8 @@ namespace UoM_Server.Controllers
                     bool taskSucceeded = dc.CreateTask(taskTable);
                     int taskID = ((TaskTable)dc.FindTask("EratosTaskID", taskTable.EratosTaskID)[0]).TaskID;
                     // Update Association
-                    bool associationResponse = dc.CreateResourceTaskAssociation(rscID, taskID);
+                    bool associationResponse1 = dc.CreateResourceTaskAssociation(rscID, taskID);
+                    bool associationResponse2 = dc.CreateResourceModuleAssociation(rscID, moduleID);
                 }
                 catch(Exception e)
                 {
