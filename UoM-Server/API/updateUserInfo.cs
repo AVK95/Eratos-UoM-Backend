@@ -18,18 +18,27 @@ namespace UoM_Server.API
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("Modify the information of a user.");
+            try
+            {
+                log.LogInformation("Modify the information of a user.");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            UserTable userTable = JsonConvert.DeserializeObject<UserTable>(requestBody);
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                UserTable userTable = JsonConvert.DeserializeObject<UserTable>(requestBody);
 
-            InRequestController irc = new InRequestController();
-            string response = await Task.Run(() => irc.updateUserInfo(userTable));
+                InRequestController irc = new InRequestController();
+                string response = await Task.Run(() => irc.updateUserInfo(userTable));
 
-            string responseMessage = (string.IsNullOrEmpty(requestBody))
-                ? "{" + $"\"Success\":\"False\",\"Message\":\"Error: Invalid User Info JSON.\"" + "}"
-                : $" {response} ";
-            return new OkObjectResult(responseMessage);
+                string responseMessage = (string.IsNullOrEmpty(requestBody))
+                    ? "{" + $"\"Success\":\"False\",\"Message\":\"Error: Invalid User Info JSON.\"" + "}"
+                    : $" {response} ";
+                return new OkObjectResult(responseMessage);
+            }
+            catch
+            {
+                string responseMessage = "Server error. Please contact the administrator.";
+                return new BadRequestObjectResult(responseMessage);
+            }
+            
         }
     }
 }
