@@ -89,7 +89,7 @@ namespace UoM_Server.Controllers
                     userInfoList.Add(Util.WriteObjToJSON(userTable));
                 }
                 dc.Disconnect();
-                return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{string.Join("|", userInfoList)}\"" + "}";
+                return "{" + $"\"Success\":\"True\",\"UserInfo\":[{string.Join(",", userInfoList)}]" + "}";
             }
             catch (Exception e)
             {
@@ -187,7 +187,7 @@ namespace UoM_Server.Controllers
             dc.Disconnect();
             return resp.Count == 0 
                 ? "{" + "\"Success\": \"False\",\"Message\":\"No active module.\"" + "}"
-                : "{" + $"\"Success\": \"True\",\"Modules\":\"{string.Join("|", moduleList)}\"" + "}";
+                : "{" + $"\"Success\": \"True\",\"Modules\":[{string.Join(",", moduleList)}]" + "}";
         }
 
         public string getAllModules(int start, int end)
@@ -213,7 +213,7 @@ namespace UoM_Server.Controllers
             dc.Disconnect();
             return resp.Count == 0 
                 ? "{" + "\"Success\": \"False\",\"Message\":\"No module has been created.\"" + "}"
-                : "{" + $"\"Success\": \"True\",\"Modules\":\"{string.Join("|", moduleList)}\"" + "}";
+                : "{" + $"\"Success\": \"True\",\"Modules\":[{string.Join(",", moduleList)}]" + "}";
         }
 
         #endregion
@@ -314,7 +314,7 @@ namespace UoM_Server.Controllers
                     orderResultList.Add(Util.WriteObjToJSON(orderTable));
                 }
                 dc.Disconnect();
-                return "{" + $"\"Success\":\"True\",\"Tasks\":\"{string.Join("|",taskResultList)}\",\"Orders\":\"{string.Join("|",orderResultList)}\"" + "}";
+                return "{" + $"\"Success\":\"True\",\"Tasks\":[{string.Join(",",taskResultList)}],\"Orders\":[{string.Join(",",orderResultList)}]" + "}";
             }
             catch(Exception e)
             {
