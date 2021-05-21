@@ -44,7 +44,7 @@ namespace UoM_Server
             Console.WriteLine("-----------------------------------");
             System.Threading.Thread.Sleep(5000);
             Console.WriteLine("Testing create new task.");
-            GNTaskResponse taskResponse = orc.CreateNewTask(Priority.Low,rsc.id);
+            GNTaskResponse taskResponse = orc.CreateNewTask(Priority.Low,rsc.id, "GenerateClimateInfo");
             Console.WriteLine("Done! Task ID: " + taskResponse.id);
             Console.WriteLine("-----------------------------------");
             System.Threading.Thread.Sleep(5000);
