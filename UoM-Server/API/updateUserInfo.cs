@@ -6,32 +6,30 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using UoM_Server.Controllers;
 using UoM_Server.Models;
+using UoM_Server.Controllers;
 
 namespace UoM_Server.API
 {
-    class userRegister
+    class updateUserInfo
     {
-
-        [FunctionName("userRegister")]
+        [FunctionName("updateUserInfo")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             try
             {
-                log.LogInformation("Register a new user.");
+                log.LogInformation("Modify the information of a user.");
 
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                User data = JsonConvert.DeserializeObject<User>(requestBody);
+                UserTable userTable = JsonConvert.DeserializeObject<UserTable>(requestBody);
 
                 InRequestController irc = new InRequestController();
-                string response = await Task.Run(() => irc.createUser(data));
+                string response = await Task.Run(() => irc.updateUserInfo(userTable));
 
-                string errorMessage = "Invalid request. Missing payload. Format: User JSON";
                 string responseMessage = (string.IsNullOrEmpty(requestBody))
-                    ? "{" + $"\"Success\":\"False\",\"Message\":\"{errorMessage}\"" + "}"
+                    ? "{" + $"\"Success\":\"False\",\"Message\":\"Error: Invalid User Info JSON.\"" + "}"
                     : $" {response} ";
                 return new OkObjectResult(responseMessage);
             }
@@ -42,6 +40,5 @@ namespace UoM_Server.API
             }
             
         }
-
     }
 }

@@ -7,32 +7,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UoM_Server.Controllers;
-using UoM_Server.Models;
 
-namespace UoM_Server.API
+namespace API
 {
-    class userRegister
+    public static class getResourceVersion
     {
-
-        [FunctionName("userRegister")]
+        [FunctionName("getResourceVersion")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
             try
             {
-                log.LogInformation("Register a new user.");
-
+                log.LogInformation("Get versions of a resource.");
+                string resourceUri = req.Query["resourceUri"];
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                User data = JsonConvert.DeserializeObject<User>(requestBody);
-
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                resourceUri = resourceUri ?? data?.resourceUri;
+                // Functions to call eratos server
                 InRequestController irc = new InRequestController();
-                string response = await Task.Run(() => irc.createUser(data));
+                string versions = await Task.Run(() => irc.getResourceVersion(resourceUri));
 
-                string errorMessage = "Invalid request. Missing payload. Format: User JSON";
-                string responseMessage = (string.IsNullOrEmpty(requestBody))
+                string errorMessage = "Please pass a valid resourceUri (not a resource id)";
+                string responseMessage = (string.IsNullOrEmpty(resourceUri))
                     ? "{" + $"\"Success\":\"False\",\"Message\":\"{errorMessage}\"" + "}"
-                    : $" {response} ";
+                    : $" {versions} ";
                 return new OkObjectResult(responseMessage);
             }
             catch
@@ -42,6 +41,5 @@ namespace UoM_Server.API
             }
             
         }
-
     }
 }

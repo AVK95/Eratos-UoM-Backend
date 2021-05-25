@@ -71,13 +71,4 @@ namespace UoM_Server.Models
         }
     }
 
-    [DataContract]
-    public class PersonResource : Resource
-    {
-        [DataMember(Name = "description", EmitDefaultValue = false)]
-        public string description { get; set; }
-
-        [DataMember(Name = "name", EmitDefaultValue = false)]
-        public string name { get; set; }
-    }
 }

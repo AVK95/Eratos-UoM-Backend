@@ -1390,24 +1390,21 @@ namespace UoM_Server.Controllers
 
             //dh.UpdateUser(2, "isadmin", "true");
             //dh.CreateUser(new UserTable(0, "demouser4", "demoemail4", "demoname4", "demoauth4", DateTime.Now.ToString(), null, false));
-            dh.DeleteUser(4);
+            //dh.DeleteUser(4);
 
             /*
             //bool response = dh.CreateOrder(new OrderTable(0, (float)19.65, "Unpaid", DateTime.Now, 3));
             ArrayList orders = dh.FindOrder("userid", "3");
             foreach (OrderTable element in orders)
                 Console.WriteLine(element.OrderID + " " + element.Price);
-
             //bool response = dh.CreateTask(new TaskTable(0, DateTime.Now, default, default, default, "Regular", "Ended", null, null, null, 1, 2));
             ArrayList tasks = dh.FindTask("userid", "1");
             foreach (TaskTable element in tasks)
                 Console.WriteLine(element.TaskID + " " + element.CreatedAt + " " + element.OrderID);
-
             //bool response = dh.CreateModule(new ModuleTable(0, "module2_id", "module2", null, true));
             ArrayList modules = dh.FindModule("isactive", "false");
             foreach (ModuleTable element in modules)
                 Console.WriteLine(element.ModuleID + " " + element.ModuleName);
-
             //bool response = dh.CreateResource(new ResourceTable(0, "resource1_id", default, "policy1", "geo1", null));
             ArrayList ress = dh.FindResource("policy", "policy1");
             foreach (ResourceTable element in ress)

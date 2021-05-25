@@ -7,10 +7,7 @@ using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 using System.IO;
 using System.Text.Json;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.IO.Compression;
-using System.Text.Json.Serialization;
+using System.Collections;
 using System.Text;
 using System.Collections.Generic;
 using UoM_Server.Models;
@@ -21,6 +18,7 @@ namespace UoM_Server.Controllers
 
     class OutRequestController
     {
+
         static string SendRequest(HttpWebRequest request)
         {
             try
@@ -154,12 +152,12 @@ namespace UoM_Server.Controllers
 
         #region Task
 
-        public GNTaskResponse CreateNewTask(Priority priority, string resource)
+        public GNTaskResponse CreateNewTask(Priority priority, string resource, string type)
         {
             string token = GetToken();
             GNTaskRequest req = new GNTaskRequest();
             req.priority = priority.ToString();
-            req.type = "GenerateClimateInfo";
+            req.type = type;
             req.meta = new GNTaskMeta();
             req.meta.resource = resource;
             byte[] body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<GNTaskRequest>(req));
@@ -172,6 +170,56 @@ namespace UoM_Server.Controllers
             string json = GetWithToken(token, Config.Gateway_Node_Domain + "/tasks/" + id);
 
             return JsonSerializer.Deserialize<GNTaskResponse>(json);
+        }
+
+        public bool SyncTasksAndOrders()
+        {
+            DatabaseController dc = new DatabaseController();
+            try
+            {
+                dc.Connect();
+                ArrayList queuedList = dc.FindTask("state", "Queued");
+                ArrayList processingList = dc.FindTask("state", "Processing");
+
+                if (queuedList.Count != 0 || processingList.Count != 0)
+                {
+                    try
+                    {
+                        ArrayList list = new ArrayList();
+                        list.AddRange(queuedList);
+                        list.AddRange(processingList);
+                        foreach (TaskTable taskTable in list)
+                        {
+                            GNTaskResponse task = GetTask(taskTable.EratosTaskID);
+                            dc.UpdateTask(taskTable.TaskID, "State", task.state);
+                            dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt);
+                            if (task.state == "Complete" || task.state == "Error")
+                            {
+                                dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
+                                dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
+                                // Update the policy
+                                UserTable userTable = (UserTable)dc.FindUser("UserID", taskTable.UserID.ToString())[0];
+                                ResourceTable rscTable = (ResourceTable)dc.FindResource("EratosResourceID", taskTable.Meta)[0];
+                                ResourcePolicy rscPolicy = GetPolicy(rscTable.Policy);
+                                string policyResponse = AddUserToPolicy(rscPolicy, userTable.EratosUserID);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        dc.Disconnect();
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                dc.Disconnect();
+                return false;
+
+            }
+            dc.Disconnect();
+            return true;
         }
 
         public string RemoveTask(string id)
