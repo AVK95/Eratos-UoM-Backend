@@ -2,9 +2,9 @@
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Collections;
-using UoM_Server.Models;
+using EratosUoMBackend.Models;
 
-namespace UoM_Server.Controllers
+namespace EratosUoMBackend.Controllers
 {
     #region Database Exceptions
     public sealed class EratosDBException : Exception
@@ -426,7 +426,7 @@ namespace UoM_Server.Controllers
             if (end >= start + MAX_ROWS)
                 end = start + MAX_ROWS - 1;
 
-            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY UserID) AS RowNum FROM [dbo].[Order]) ";
+            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY OrderID) AS RowNum FROM [dbo].[Order]) ";
             command += "SELECT * FROM OrderedResults WHERE RowNum BETWEEN @StartRow AND @EndRow";
 
             try
@@ -691,7 +691,7 @@ namespace UoM_Server.Controllers
             if (end >= start + MAX_ROWS)
                 end = start + MAX_ROWS - 1;
 
-            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY UserID) AS RowNum FROM [dbo].[Task]) ";
+            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY TaskID) AS RowNum FROM [dbo].[Task]) ";
             command += "SELECT * FROM OrderedResults WHERE RowNum BETWEEN @StartRow AND @EndRow";
 
             try
@@ -858,9 +858,9 @@ namespace UoM_Server.Controllers
             if (IdentifierType.ToLower().CompareTo("moduleid") == 0)
                 command += "[ModuleID] = " + "\'" + int.Parse(IdentifierValue) + "\'";
             else if (IdentifierType.ToLower().CompareTo("modulename") == 0)
-                command += "[ModuleName] = " + IdentifierValue;
+                command += "[ModuleName] = " + "\'" + IdentifierValue + "\'";
             else if (IdentifierType.ToLower().CompareTo("moduleschema") == 0)
-                command += "[ModuleSchema] = " + IdentifierValue;
+                command += "[ModuleSchema] = " + "\'" + IdentifierValue + "\'";
             else if (IdentifierType.ToLower().CompareTo("isactive") == 0)
             {
                 int tempBool;
@@ -919,7 +919,7 @@ namespace UoM_Server.Controllers
             if (end >= start + MAX_ROWS)
                 end = start + MAX_ROWS - 1;
 
-            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY UserID) AS RowNum FROM [dbo].[Module]) ";
+            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY ModuleID) AS RowNum FROM [dbo].[Module]) ";
             command += "SELECT * FROM OrderedResults WHERE RowNum BETWEEN @StartRow AND @EndRow";
 
             try
@@ -1148,7 +1148,7 @@ namespace UoM_Server.Controllers
             if (end >= start + MAX_ROWS)
                 end = start + MAX_ROWS - 1;
 
-            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY UserID) AS RowNum FROM [dbo].[Resource]) ";
+            string command = "WITH OrderedResults AS (SELECT *, ROW_NUMBER() OVER (ORDER BY ResourceID) AS RowNum FROM [dbo].[Resource]) ";
             command += "SELECT * FROM OrderedResults WHERE RowNum BETWEEN @StartRow AND @EndRow";
 
             try
@@ -1379,8 +1379,8 @@ namespace UoM_Server.Controllers
     {
         static void Main(string[] args)
         {
-            DatabaseController dh = new DatabaseController();
-            Console.WriteLine(dh.Connect());
+            //DatabaseController dh = new DatabaseController();
+            //Console.WriteLine(dh.Connect());
             //bool response = dh.CreateUser(new UserTable(0, "demouser3", "demoemail3", "demoname3", "demoauth3", DateTime.Now, null));
             //ArrayList entry = dh.FindUser("email", "demoemail3");
             /*ArrayList users = dh.FindUser(2, 2);
@@ -1414,8 +1414,8 @@ namespace UoM_Server.Controllers
             //bool response = dh.CreateResourceModuleAssociation(1, 1);
             //Console.WriteLine(response);
 
-            Console.ReadLine();
-            dh.Disconnect();
+            //Console.ReadLine();
+            //dh.Disconnect();
         }
     }
 

@@ -10,10 +10,10 @@ using System.Text.Json;
 using System.Collections;
 using System.Text;
 using System.Collections.Generic;
-using UoM_Server.Models;
+using EratosUoMBackend.Models;
 
 
-namespace UoM_Server.Controllers
+namespace EratosUoMBackend.Controllers
 {
 
     class OutRequestController

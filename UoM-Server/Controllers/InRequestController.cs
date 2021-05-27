@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UoM_Server.Models;
+using EratosUoMBackend.Models;
 using System.Collections;
 
-namespace UoM_Server.Controllers
+namespace EratosUoMBackend.Controllers
 {
     class InRequestController
     {
@@ -146,12 +146,15 @@ namespace UoM_Server.Controllers
                 {
                     ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, bool.Parse(isActive));
                     bool resp = dc.CreateModule(mod);
+
+                    if (!resp)
+                        return "{" + $"\"Success\": \"False\",\"Message\":\"Database could not be accessed. Try again in some time.\"" + "}";
                 }
                 else
                 {
                     ModuleTable mod = (ModuleTable)moduleList[0];
                     if (mod.ModuleName != moduleName) dc.UpdateModule(mod.ModuleID, "modulename", moduleName);
-                    if (mod.ModuleSchema != moduleSchema) dc.UpdateModule(mod.ModuleID, "moduleschema", moduleSchema);
+                    if (mod.isActive != bool.Parse(isActive)) dc.UpdateModule(mod.ModuleID, "isActive", isActive);
                 }
             }
             catch (Exception e)
@@ -226,10 +229,8 @@ namespace UoM_Server.Controllers
             try
             {
                 OutRequestController orc = new OutRequestController();
-                
                 Resource resource = orc.CreateResource(moduleType, name);
                 string geoResponse = orc.UpdateGeometry(resource.id, geometry);
-
                 Priority pri = Priority.Low;
                 switch (priority.ToLower())
                 {
@@ -246,51 +247,70 @@ namespace UoM_Server.Controllers
                         pri = Priority.Low;
                         break;
                 }
-
                 GNTaskResponse taskResponse = orc.CreateNewTask(pri, resource.id, taskType);
-
+                string success = "";
                 // Update database
                 try
                 {
                     dc.Connect();
-
                     resource.geo = geometry;
-
                     // Get user id
-                    UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
-                    int userID = userTable.UserID;
+                    int userID;
+                    try
+                    {
+                        UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
+                        success += "user id got";
+                        userID = userTable.UserID;
+                    }
+                    catch (Exception e)
+                    {
+                        return "{" + $"\"Success\":\"False\",\"Message\":\"Cannot find the user. Please delete the Task and Resource manually. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
+                    }
                     // Get Module id
-                    ModuleTable moduleTable = (ModuleTable)dc.FindModule("ModuleSchema", resource.type)[0];
-                    int moduleID = moduleTable.ModuleID;
+                    int moduleID;
+                    try
+                    {
+                        ModuleTable moduleTable = (ModuleTable)dc.FindModule("ModuleSchema", resource.type)[0];
+                        success += ", module got";
+                        moduleID = moduleTable.ModuleID;
+                    }
+                    catch (Exception e)
+                    {
+                        return "{" + $"\"Success\":\"False\",\"Message\":\"Cannot find the module. Please delete the Task and Resource manually. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
+                    }
                     // Update Resource
                     ResourceTable rscTable = Util.MAP_TO_TABLE(resource);
                     bool rscResponse = dc.CreateResource(rscTable);
+                    if (rscResponse) success += ", resource created in database";
                     int rscID = ((ResourceTable)dc.FindResource("EratosResourceID", rscTable.EratosResourceID)[0]).ResourceID;
                     // Update Order
                     OrderTable orderTable = new OrderTable(0, float.Parse(price), "Pending", DateTime.Now.ToString(), userID, paymentID);
                     bool ordResponse = dc.CreateOrder(orderTable);
+                    if (ordResponse) success += ", order created in database";
                     int ordID = ((OrderTable)dc.FindOrder("PaymentID", paymentID)[0]).OrderID;
                     // Update Task
                     TaskTable taskTable = Util.MAP_TO_TABLE(taskResponse, userID, ordID, rscTable.Name);
                     bool taskSucceeded = dc.CreateTask(taskTable);
+                    if (taskSucceeded) success += ", task created in database";
                     int taskID = ((TaskTable)dc.FindTask("EratosTaskID", taskTable.EratosTaskID)[0]).TaskID;
                     // Update Association
                     bool associationResponse1 = dc.CreateResourceTaskAssociation(rscID, taskID);
+                    if (associationResponse1) success += ", association between task and resource updated";
                     bool associationResponse2 = dc.CreateResourceModuleAssociation(rscID, moduleID);
+                    if (associationResponse2) success += ", association between module and resource updated";
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     dc.Disconnect();
-                    return "{" + $"\"Success\":\"False\",\"Message\":\"Database error. {e.Message}\"" + "}";
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Database error. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\", \"Processed\":\"{success}\"" + "}";
                 }
                 dc.Disconnect();
-                return "{" +$"\"Success\":\"True\",\"TaskID\":\"{taskResponse.id}\"" + "}";
+                return "{" + $"\"Success\":\"True\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Create task failed. {e.Message}\"" + "}";
             }
-            
         }
 
         public string getTasksOrdersOfUser(string userUri)
