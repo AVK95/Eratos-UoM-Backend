@@ -226,8 +226,22 @@ namespace EratosUoMBackend.Controllers
         public string createTask(string userUri, string paymentID, string price, string moduleType, string taskType, string name, string geometry, string priority)
         {
             DatabaseController dc = new DatabaseController();
+            int userID, moduleID;
+
             try
             {
+                //Check Database consistency before a new task can be created
+                dc.Connect();
+                ArrayList queryCache = dc.FindUser("EratosUserID", userUri);
+                if (queryCache.Count == 0)
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Cannot find the user.\"" + "}";
+                else
+                {
+                    UserTable user = (UserTable)queryCache[0];
+                    userID = user.UserID;
+                }
+                queryCache.Clear();
+                
                 OutRequestController orc = new OutRequestController();
                 Resource resource = orc.CreateResource(moduleType, name);
                 string geoResponse = orc.UpdateGeometry(resource.id, geometry);
@@ -248,61 +262,43 @@ namespace EratosUoMBackend.Controllers
                         break;
                 }
                 GNTaskResponse taskResponse = orc.CreateNewTask(pri, resource.id, taskType);
-                string success = "";
+                
                 // Update database
                 try
-                {
-                    dc.Connect();
+                {                    
                     resource.geo = geometry;
-                    // Get user id
-                    int userID;
-                    try
+                    queryCache = dc.FindModule("ModuleSchema", resource.type);
+                    if (queryCache.Count == 0)
+                        return "{" + $"\"Success\":\"False\",\"Message\":\"Cannot find the module in database.\"" + "}";
+                    else
                     {
-                        UserTable userTable = (UserTable)dc.FindUser("EratosUserID", userUri)[0];
-                        success += "user id got";
-                        userID = userTable.UserID;
-                    }
-                    catch (Exception e)
-                    {
-                        return "{" + $"\"Success\":\"False\",\"Message\":\"Cannot find the user. Please delete the Task and Resource manually. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
-                    }
-                    // Get Module id
-                    int moduleID;
-                    try
-                    {
-                        ModuleTable moduleTable = (ModuleTable)dc.FindModule("ModuleSchema", resource.type)[0];
-                        success += ", module got";
+                        ModuleTable moduleTable = (ModuleTable)queryCache[0];
                         moduleID = moduleTable.ModuleID;
                     }
-                    catch (Exception e)
-                    {
-                        return "{" + $"\"Success\":\"False\",\"Message\":\"Cannot find the module. Please delete the Task and Resource manually. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
-                    }
+                                        
                     // Update Resource
                     ResourceTable rscTable = Util.MAP_TO_TABLE(resource);
-                    bool rscResponse = dc.CreateResource(rscTable);
-                    if (rscResponse) success += ", resource created in database";
+                    bool rscResponse = dc.CreateResource(rscTable);                    
                     int rscID = ((ResourceTable)dc.FindResource("EratosResourceID", rscTable.EratosResourceID)[0]).ResourceID;
+
                     // Update Order
                     OrderTable orderTable = new OrderTable(0, float.Parse(price), "Pending", DateTime.Now.ToString(), userID, paymentID);
-                    bool ordResponse = dc.CreateOrder(orderTable);
-                    if (ordResponse) success += ", order created in database";
+                    bool ordResponse = dc.CreateOrder(orderTable);                    
                     int ordID = ((OrderTable)dc.FindOrder("PaymentID", paymentID)[0]).OrderID;
+
                     // Update Task
                     TaskTable taskTable = Util.MAP_TO_TABLE(taskResponse, userID, ordID, rscTable.Name);
-                    bool taskSucceeded = dc.CreateTask(taskTable);
-                    if (taskSucceeded) success += ", task created in database";
+                    bool taskSucceeded = dc.CreateTask(taskTable);                    
                     int taskID = ((TaskTable)dc.FindTask("EratosTaskID", taskTable.EratosTaskID)[0]).TaskID;
+
                     // Update Association
-                    bool associationResponse1 = dc.CreateResourceTaskAssociation(rscID, taskID);
-                    if (associationResponse1) success += ", association between task and resource updated";
-                    bool associationResponse2 = dc.CreateResourceModuleAssociation(rscID, moduleID);
-                    if (associationResponse2) success += ", association between module and resource updated";
+                    bool associationResponse1 = dc.CreateResourceTaskAssociation(rscID, taskID);                    
+                    bool associationResponse2 = dc.CreateResourceModuleAssociation(rscID, moduleID);                    
                 }
                 catch (Exception e)
                 {
                     dc.Disconnect();
-                    return "{" + $"\"Success\":\"False\",\"Message\":\"Database error. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\", \"Processed\":\"{success}\"" + "}";
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Database error. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
                 }
                 dc.Disconnect();
                 return "{" + $"\"Success\":\"True\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
