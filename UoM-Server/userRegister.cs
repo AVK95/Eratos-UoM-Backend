@@ -9,6 +9,10 @@ using Newtonsoft.Json;
 using EratosUoMBackend.Controllers;
 using EratosUoMBackend.Models;
 
+/* userRegister is an API file of Azure Functions HTTP trigger for creating a new user with its information. 
+It requires a JSON that contains the information of the user with the userURI for the database to 
+query and create. It returns a response telling either the operation is successful (with the user name of the newly created user) or failed. */
+
 namespace EratosUoMBackend.API
 {
     class userRegister
