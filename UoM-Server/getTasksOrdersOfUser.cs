@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using EratosUoMBackend.Controllers;
 
+/*getTasksOrdersOfUsers is an API file for fetching all task and order history of a specific user. The API takes a single parameter userUri. */
+
 namespace EratosUoMBackend
 {
     class getTasksOrdersOfUser
