@@ -88,9 +88,9 @@ namespace EratosUoMBackend
             return rscTable;
         }
 
-        public static TaskTable MAP_TO_TABLE(GNTaskResponse task, int userUri, int orderId, string name)
+        public static TaskTable MAP_TO_TABLE(GNTaskResponse task, int userId, int orderId, string name)
         {
-            TaskTable taskTable = new TaskTable(0, task.id, task.createdAt, task.lastUpdatedAt, task.startedAt, task.endedAt, task.priority,name, task.state, task.type, task.meta.resource, task.error, userUri, orderId);
+            TaskTable taskTable = new TaskTable(0, task.id, task.createdAt, task.lastUpdatedAt, task.startedAt, task.endedAt, name, task.priority, task.state, task.type, task.meta.resource, task.error, userId, orderId);
             return taskTable;
         }
         #endregion

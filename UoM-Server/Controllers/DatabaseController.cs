@@ -52,6 +52,9 @@ namespace EratosUoMBackend.Controllers
 
         public string Disconnect()
         {
+            if (!isConnected)
+                return "Closed";
+
             try
             {
                 connection.Close();
@@ -536,31 +539,31 @@ namespace EratosUoMBackend.Controllers
                 sql.Parameters["@CreatedAt"].Value = taskDetails.CreatedAt;
 
                 sql.Parameters.Add("@LastUpdatedAt", SqlDbType.DateTime);
-                if (taskDetails.LastUpdatedAt.CompareTo(default) == 0)
+                if (taskDetails.LastUpdatedAt == null)
                     sql.Parameters["@LastUpdatedAt"].Value = DBNull.Value;
                 else
                     sql.Parameters["@LastUpdatedAt"].Value = taskDetails.LastUpdatedAt;
 
                 sql.Parameters.Add("@StartedAt", SqlDbType.DateTime);
-                if (taskDetails.StartedAt.CompareTo(default) == 0)
+                if (taskDetails.StartedAt == null)
                     sql.Parameters["@StartedAt"].Value = DBNull.Value;
                 else
                     sql.Parameters["@StartedAt"].Value = taskDetails.StartedAt;
 
                 sql.Parameters.Add("@EndedAt", SqlDbType.DateTime);
-                if (taskDetails.EndedAt.CompareTo(default) == 0)
+                if (taskDetails.EndedAt == null)
                     sql.Parameters["@EndedAt"].Value = DBNull.Value;
                 else
                     sql.Parameters["@EndedAt"].Value = taskDetails.EndedAt;
 
                 sql.Parameters.Add("@Priority", SqlDbType.NVarChar);
-                if (taskDetails.Priority.CompareTo(null) == 0)
+                if (taskDetails.Priority == null)
                     sql.Parameters["@Priority"].Value = DBNull.Value;
                 else
                     sql.Parameters["@Priority"].Value = taskDetails.Priority;
 
                 sql.Parameters.Add("@State", SqlDbType.NVarChar);
-                if (taskDetails.State.CompareTo(null) == 0)
+                if (taskDetails.State == null)
                     sql.Parameters["@State"].Value = DBNull.Value;
                 else
                     sql.Parameters["@State"].Value = taskDetails.State;
@@ -1310,7 +1313,9 @@ namespace EratosUoMBackend.Controllers
             string command = "SELECT * FROM [ResourceTask] WHERE [ResourceID] = " + ResourceID.ToString() + " AND [TaskID] = " + TaskID.ToString();
             SqlCommand sql = new SqlCommand(command, connection);
             SqlDataReader result = sql.ExecuteReader();
-            return result.HasRows;
+            bool hasRows = result.HasRows;
+            result.Close();
+            return hasRows;
         }
 
         public bool CreateResourceModuleAssociation(int ResourceID, int ModuleID)
@@ -1369,7 +1374,9 @@ namespace EratosUoMBackend.Controllers
             string command = "SELECT * FROM [ResourceModule] WHERE [ResourceID] = " + ResourceID.ToString() + " AND [ModuleID] = " + ModuleID.ToString();
             SqlCommand sql = new SqlCommand(command, connection);
             SqlDataReader result = sql.ExecuteReader();
-            return result.HasRows;
+            bool hasRows = result.HasRows;
+            result.Close();
+            return hasRows;
         }
         #endregion
     }

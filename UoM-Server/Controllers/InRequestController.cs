@@ -305,6 +305,7 @@ namespace EratosUoMBackend.Controllers
             }
             catch (Exception e)
             {
+                dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Create task failed. {e.Message}\"" + "}";
             }
         }

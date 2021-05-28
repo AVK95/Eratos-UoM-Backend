@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using EratosUoMBackend.Controllers;
 using EratosUoMBackend.Models;
 
-namespace EratosUoMBackend.API
+namespace EratosUoMBackend
 {
     class userRegister
     {
