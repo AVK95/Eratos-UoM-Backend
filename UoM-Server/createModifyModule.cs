@@ -6,6 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using EratosUoMBackend.Controllers;
 
+/* createModifyModule file is Azure Functions HTTP trigger for routing the creating module & modifying module. 
+The API receives same query parameter and check whether there’s a schema exist in database and 
+create a new one if there’s none; for module modification, it will check each variable in Module object and 
+set the object value if there’s a difference */
+
 namespace EratosUoMBackend
 {
     public static class createModifyModule
