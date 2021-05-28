@@ -10,6 +10,9 @@ The project is to develop a standalone web application which enables users to pe
 Detailed documentation about the project is found in our confluence directory:
 <a href="https://confluence.cis.unimelb.edu.au:8443/display/COMP900822021SM1ER/Project+Background">Confluence</a>
 
+<h2>About the final release</h2>
+Most of the work is done. The program is in a MVC style. The folder Models has models of all objects being used in it. And the Controllers folder has three files in it, the InRequestController (for handling requests received by our APIs), the OutRequestController (for connecting with the Eratos) and the Database Controller (for updating the database). Some tool functions (for example functions for mapping object we get from the Eratos to objects can be stored into our database) are in the Util.cs. Domains and our userID and user secret, and the Eratos API information are in the Config.cs. APIs are in the UoM-Server folder to meet the required format of Azure.
+
 <h3>About the Team</h3>
 <ul>
   <li>Kelvin Wijaya Wijaya</li>
