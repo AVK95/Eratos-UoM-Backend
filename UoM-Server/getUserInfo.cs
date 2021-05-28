@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using EratosUoMBackend.Controllers;
 
+/* getUserInfo is an API file of Azure Functions HTTP trigger for getting the information for a specific user or all users. 
+The API takes a single query parameter which can either be a userURI string or a single string “all”, checks its 
+availability and returns the requested user info JSON. */
+
 namespace EratosUoMBackend
 {
     class getUserInfo
