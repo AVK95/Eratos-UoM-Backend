@@ -4,6 +4,9 @@ using System.Data;
 using System.Collections;
 using EratosUoMBackend.Models;
 
+/*DatabaseController
+This is the controller which is used to connect to the database. It fetches data from database and update the database. */
+
 namespace EratosUoMBackend.Controllers
 {
     #region Database Exceptions

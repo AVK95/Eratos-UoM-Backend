@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using EratosUoMBackend.Controllers;
 
+/* getAllModules file is Azure Functions HTTP trigger for getting all modules. It can only be accessed by a User with isAdmin value: true. 
+It requires 2 integer query parameter that indicates the starting index and ending index of the module being requested. */
+
 namespace EratosUoMBackend
 {
     public static class getAllModules

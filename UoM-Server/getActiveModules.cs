@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using EratosUoMBackend.Controllers;
 
+/* getActiveModules file is Azure Functions HTTP trigger for getting modules with isActive value: true. It doesn’t require any parameter. */
+
 namespace EratosUoMBackend
 {    
     public static class getActiveModules

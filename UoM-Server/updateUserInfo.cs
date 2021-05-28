@@ -9,6 +9,10 @@ using Newtonsoft.Json;
 using EratosUoMBackend.Models;
 using EratosUoMBackend.Controllers;
 
+/* updateUserInfo is an API file of Azure Functions HTTP trigger for modifying the information for a specific user. 
+It requires a JSON that contains the information that needs to be updated with the userURI for the database to query 
+and update. It returns a response telling either the operation is successful or failed. */
+
 namespace EratosUoMBackend
 {
     class updateUserInfo

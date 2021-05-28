@@ -12,6 +12,9 @@ using System.Text;
 using System.Collections.Generic;
 using EratosUoMBackend.Models;
 
+/*OutRequestController
+This is the controller which send requests to Eratos APIs, and process the returned data, finally return it to the InRequestController. */
+
 
 namespace EratosUoMBackend.Controllers
 {

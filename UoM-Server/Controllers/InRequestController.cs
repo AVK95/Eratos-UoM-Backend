@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 using EratosUoMBackend.Models;
 using System.Collections;
 
+/*InRequestController
+This is the controller which handle requests received by APIs from the front-end. Basically each API matches 
+one function in InRequestController. The InRequestController calls functions in OutRequestController and 
+DatabaseController to do further processing. */
+
 namespace EratosUoMBackend.Controllers
 {
     class InRequestController
