@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using EratosUoMBackend.Controllers;
 
+/*createTask is an API file which allows the front-end to create a task. The parameters are userUri, paymentID, price, moduleType,
+taskType, name, geometry, priority*/
+
 namespace EratosUoMBackend
 {
     public static class createTask
