@@ -973,9 +973,7 @@ namespace EratosUoMBackend.Controllers
 
             string command = "UPDATE [dbo].[Module] SET ";
             if (IdentifierType.ToLower().CompareTo("modulename") == 0)
-                command += "[ModuleName] = " + IdentifierValue;
-            else if (IdentifierType.ToLower().CompareTo("moduleschema") == 0)
-                command += "[ModuleSchema] = " + IdentifierValue;
+                command += "[ModuleName] = " + "\'" + IdentifierValue + "\'";
             else if (IdentifierType.ToLower().CompareTo("isactive") == 0)
             {
                 int tempBool;

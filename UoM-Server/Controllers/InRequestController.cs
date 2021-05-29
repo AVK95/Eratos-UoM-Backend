@@ -67,7 +67,7 @@ namespace EratosUoMBackend.Controllers
                 UserTable userTable = (UserTable)UserInfoList[0];
                 string userInfo = Util.WriteObjToJSON(userTable);
                 dc.Disconnect();
-                return "{" + $"\"Success\":\"True\",\"UserInfo\":\"{userInfo}\"" + "}";
+                return "{" + $"\"Success\":\"True\",\"UserInfo\":{userInfo}" + "}";
             }
             catch (Exception e)
             {
@@ -343,6 +343,58 @@ namespace EratosUoMBackend.Controllers
                 dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Get task failed. {e.Message}\"" + "}";
             }
+        }
+
+        public string getAllOrders(int start, int end)
+        {
+            DatabaseController dc = new DatabaseController();
+
+            ArrayList resp = new ArrayList();
+            List<string> orderList = new List<string>();
+            try
+            {
+                dc.Connect();
+                resp = dc.FindOrder(start, end);
+            }
+            catch (Exception e)
+            {
+                dc.Disconnect();
+                return "{" + $"\"Success\": \"False\",\"Message\":\"Database error. {e.Message}\"" + "}";
+            }
+            foreach (OrderTable order in resp)
+            {
+                orderList.Add(Util.WriteObjToJSON(order));
+            }
+            dc.Disconnect();
+            return resp.Count == 0
+                ? "{" + "\"Success\": \"False\",\"Message\":\"No order has been found.\"" + "}"
+                : "{" + $"\"Success\": \"True\",\"Orders\":[{string.Join(",", orderList)}]" + "}";
+        }
+
+        public string getAllTasks(int start, int end)
+        {
+            DatabaseController dc = new DatabaseController();
+
+            ArrayList resp = new ArrayList();
+            List<string> taskList = new List<string>();
+            try
+            {
+                dc.Connect();
+                resp = dc.FindTask(start, end);
+            }
+            catch (Exception e)
+            {
+                dc.Disconnect();
+                return "{" + $"\"Success\": \"False\",\"Message\":\"Database error. {e.Message}\"" + "}";
+            }
+            foreach (TaskTable task in resp)
+            {
+                taskList.Add(Util.WriteObjToJSON(task));
+            }
+            dc.Disconnect();
+            return resp.Count == 0
+                ? "{" + "\"Success\": \"False\",\"Message\":\"No task has been found.\"" + "}"
+                : "{" + $"\"Success\": \"True\",\"Tasks\":[{string.Join(",", taskList)}]" + "}";
         }
 
         public string syncTasksAndOrders()
