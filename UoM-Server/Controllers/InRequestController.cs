@@ -468,6 +468,7 @@ namespace EratosUoMBackend.Controllers
         {
             DatabaseController dc = new DatabaseController();
             string orderInfo = "";
+            string additionalMessage = "";
             try
             {
                 dc.Connect();
@@ -478,7 +479,11 @@ namespace EratosUoMBackend.Controllers
                     OutRequestController orc = new OutRequestController();
                     string deleteTask = orc.RemoveTask(taskTable.EratosTaskID);
                     string deleteResource = orc.DeleteResource(taskTable.Meta);
-                }catch(Exception e) {  }
+                    additionalMessage = "Data removed from Eratos server.";
+                }
+                catch(Exception e) {
+                    additionalMessage = "Counld not find data in Eratos server. Perhaps already removed.";
+                }
 
                 ResourceTable resourceTable = (ResourceTable)dc.FindResource("eratosresourceid", taskTable.Meta)[0];
                 dc.DeleteResourceModuleAssociation(resourceID:resourceTable.ResourceID);
@@ -492,10 +497,10 @@ namespace EratosUoMBackend.Controllers
             catch(Exception e)
             {
                 dc.Disconnect();
-                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Database error. {e.Message}\"" + "}";
+                return "{" + $"\"Success\":\"False\",\"Message\":\"{additionalMessage} Error: Database error. {e.Message}\"" + "}";
             }
             dc.Disconnect();
-            return "{" + $"\"Success\":\"True\",\"Message\":\"Task removed successfully. Updated order information is as following.\",\"Order\":{orderInfo}" + "}";
+            return "{" + $"\"Success\":\"True\",\"Message\":\"Task removed successfully. {additionalMessage} Updated order information is as following.\",\"Order\":{orderInfo}" + "}";
         }
 
         public string removeOrder (int orderID)
