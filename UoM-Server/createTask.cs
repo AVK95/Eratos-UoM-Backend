@@ -36,7 +36,7 @@ namespace EratosUoMBackend
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
 
                 userUri = userUri ?? data?.userUri;
-                paymentID = paymentID ?? data?.paymentId;
+                paymentID = paymentID ?? data?.paymentID;
                 price = price ?? data?.price;
                 moduleType = moduleType ?? data?.moduleType;
                 name = name ?? data?.name;
@@ -46,7 +46,7 @@ namespace EratosUoMBackend
 
                 InRequestController irc = new InRequestController();
 
-                string errorMessage = "Invalid request. Missing parameters. Parameters: userUri, paymentID, price, moduleType, taskType, name, geometry, priority";
+                string errorMessage = "Invalid request. Missing parameters (or missing keys in payload). Parameters or keys: userUri, paymentID, price, moduleType, taskType, name, geometry, priority";
                 string responseMessage = (string.IsNullOrEmpty(userUri) || string.IsNullOrEmpty(paymentID) || string.IsNullOrEmpty(moduleType) ||
                     string.IsNullOrEmpty(name) || string.IsNullOrEmpty(geometry) || string.IsNullOrEmpty(priority) || string.IsNullOrEmpty(price))
                     ? "{" + $"\"Success\":\"False\",\"Message\":\"{errorMessage}\"" + "}"

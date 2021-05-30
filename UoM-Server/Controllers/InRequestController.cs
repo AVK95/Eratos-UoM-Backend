@@ -136,6 +136,23 @@ namespace EratosUoMBackend.Controllers
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Failed to update user info. {e}\"" + "}";
             }
         }
+
+        public string removeUser(int userID)
+        {
+            DatabaseController dc = new DatabaseController();
+            try
+            {
+                dc.Connect();
+                dc.DeleteUser(userID);
+            }
+            catch (Exception e)
+            {
+                dc.Disconnect();
+                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Database error. {e.Message}\"" + "}";
+            }
+            dc.Disconnect();
+            return "{" + $"\"Success\":\"True\"" + "}";
+        }
         #endregion
 
         #region Module
@@ -224,6 +241,22 @@ namespace EratosUoMBackend.Controllers
                 : "{" + $"\"Success\": \"True\",\"Modules\":[{string.Join(",", moduleList)}]" + "}";
         }
 
+        public string removeModule(int moduleID)
+        {
+            DatabaseController dc = new DatabaseController();
+            try
+            {
+                dc.Connect();
+                dc.DeleteModule(moduleID);
+            }
+            catch (Exception e)
+            {
+                dc.Disconnect();
+                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Database error. {e.Message}\"" + "}";
+            }
+            dc.Disconnect();
+            return "{" + $"\"Success\":\"True\"" + "}";
+        }
         #endregion
 
         #region Task & Order
@@ -404,6 +437,61 @@ namespace EratosUoMBackend.Controllers
             return success
                 ? "{" + "\"Success\":\"True\",\"Message\":\"Database is up to date.\"" + "}"
                 : "{" + "\"Success\":\"False\",\"Message\":\"Sync error.\"" + "}";
+        }
+
+        public string removeTask(int taskID)
+        {
+            DatabaseController dc = new DatabaseController();
+            string orderInfo = "";
+            try
+            {
+                dc.Connect();
+                TaskTable taskTable = (TaskTable)dc.FindTask("taskID", taskID.ToString())[0];
+
+                try
+                {
+                    OutRequestController orc = new OutRequestController();
+                    string deleteTask = orc.RemoveTask(taskTable.EratosTaskID);
+                    string deleteResource = orc.DeleteResource(taskTable.Meta);
+                }catch(Exception e)
+                {
+                    dc.Disconnect();
+                    return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Out request failed. {e.Message}\"" + "}";
+                }
+
+                ResourceTable resourceTable = (ResourceTable)dc.FindResource("eratosresourceid", taskTable.Meta)[0];
+                dc.DeleteResourceModuleAssociation(resourceID:resourceTable.ResourceID);
+                dc.DeleteResourceTaskAssociation(taskID: taskTable.TaskID);
+                dc.DeleteTask(taskTable.TaskID);
+                dc.DeleteResource(resourceTable.ResourceID);
+                dc.UpdateOrder(taskTable.OrderID, "status", "Deleted");
+                OrderTable orderTable = (OrderTable)dc.FindOrder("orderid", taskTable.OrderID.ToString())[0];
+                orderInfo = Util.WriteObjToJSON(orderTable);
+            }
+            catch(Exception e)
+            {
+                dc.Disconnect();
+                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Database error. {e.Message}\"" + "}";
+            }
+            dc.Disconnect();
+            return "{" + $"\"Success\":\"True\",\"Message\":\"Task removed successfully. Updated order information is as following.\",\"Order\":{orderInfo}" + "}";
+        }
+
+        public string removeOrder (int orderID)
+        {
+            DatabaseController dc = new DatabaseController();
+            try
+            {
+                dc.Connect();
+                dc.DeleteOrder(orderID);
+            }
+            catch(Exception e)
+            {
+                dc.Disconnect();
+                return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Database error. {e.Message}\"" + "}";
+            }
+            dc.Disconnect();
+            return "{" + $"\"Success\":\"True\"" + "}";
         }
         #endregion
     }

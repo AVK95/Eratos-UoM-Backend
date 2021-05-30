@@ -1287,14 +1287,20 @@ namespace EratosUoMBackend.Controllers
             }
         }
 
-        public void DeleteResourceTaskAssociation(int resourceID, int taskID)
+        public void DeleteResourceTaskAssociation(int resourceID=-1, int taskID=-1)
         {
             if (!isConnected)
                 throw new EratosDBException("Disconnected from Database!");
 
             string command = "DELETE FROM [dbo].[ResourceTask] ";
-            command += "WHERE ResourceID = " + "\'" + resourceID.ToString() + "\' ";
-            command += "AND TaskID = " + "\'" + taskID.ToString() + "\'";
+            if (resourceID == -1 && taskID == -1) throw new EratosDBException("Invalid parameter");
+            else command += "WHERE ";
+            if (resourceID != -1)
+            {
+                command += "ResourceID = " + "\'" + resourceID.ToString() + "\' ";
+                if (taskID != -1) command += "AND TaskID = " + "\'" + taskID.ToString() + "\'";
+            }
+            else if (taskID != -1) command += "TaskID = " + "\'" + taskID.ToString() + "\'";
 
             try
             {
@@ -1348,14 +1354,21 @@ namespace EratosUoMBackend.Controllers
             }
         }
 
-        public void DeleteResourceModuleAssociation(int resourceID, int moduleID)
+        public void DeleteResourceModuleAssociation(int resourceID=-1, int moduleID=-1)
         {
             if (!isConnected)
                 throw new EratosDBException("Disconnected from Database!");
 
             string command = "DELETE FROM [dbo].[ResourceModule] ";
-            command += "WHERE ResourceID = " + "\'" + resourceID.ToString() + "\' ";
-            command += "AND ModuleID = " + "\'" + moduleID.ToString() + "\'";
+            if (resourceID == -1 && moduleID == -1) throw new EratosDBException("Invalid parameter");
+            else command += "WHERE ";
+            if (resourceID != -1)
+            {
+                command += "ResourceID = " + "\'" + resourceID.ToString() + "\' ";
+                if (moduleID != -1) command += "AND ModuleID = " + "\'" + moduleID.ToString() + "\'";
+            }
+            else if (moduleID != -1) command += "ModuleID = " + "\'" + moduleID.ToString() + "\'";
+
 
             try
             {
