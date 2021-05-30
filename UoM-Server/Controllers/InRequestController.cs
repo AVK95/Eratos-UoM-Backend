@@ -264,7 +264,10 @@ namespace EratosUoMBackend.Controllers
         public string createTask(string userUri, string paymentID, string price, string moduleType, string taskType, string name, string geometry, string priority)
         {
             DatabaseController dc = new DatabaseController();
+            OutRequestController orc = new OutRequestController();
             int userID, moduleID;
+            string rollbackResourceID = "";
+            string rollbackTaskID = "";
 
             try
             {
@@ -280,8 +283,9 @@ namespace EratosUoMBackend.Controllers
                 }
                 queryCache.Clear();
                 
-                OutRequestController orc = new OutRequestController();
+                
                 Resource resource = orc.CreateResource(moduleType, name);
+                rollbackResourceID = resource.id;
                 string geoResponse = orc.UpdateGeometry(resource.id, geometry);
                 Priority pri = Priority.Low;
                 switch (priority.ToLower())
@@ -300,7 +304,8 @@ namespace EratosUoMBackend.Controllers
                         break;
                 }
                 GNTaskResponse taskResponse = orc.CreateNewTask(pri, resource.id, taskType);
-                
+                rollbackTaskID = taskResponse.id;
+
                 // Update database
                 try
                 {                    
@@ -335,6 +340,8 @@ namespace EratosUoMBackend.Controllers
                 }
                 catch (Exception e)
                 {
+                    try { orc.DeleteResource(rollbackResourceID); } catch { }
+                    try { orc.RemoveTask(rollbackTaskID); } catch { }
                     dc.Disconnect();
                     return "{" + $"\"Success\":\"False\",\"Message\":\"Database error. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
                 }
@@ -343,6 +350,8 @@ namespace EratosUoMBackend.Controllers
             }
             catch (Exception e)
             {
+                try { orc.DeleteResource(rollbackResourceID); } catch { }
+                try { orc.RemoveTask(rollbackTaskID); } catch { }
                 dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Create task failed. {e.Message}\"" + "}";
             }
