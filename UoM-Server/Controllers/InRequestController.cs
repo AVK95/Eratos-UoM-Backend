@@ -268,6 +268,9 @@ namespace EratosUoMBackend.Controllers
             int userID, moduleID;
             string rollbackResourceID = "";
             string rollbackTaskID = "";
+            int rollbackDBResourceID = -1;
+            int rollbackOrderID = -1;
+            int rollbackDBTaskID = -1;
 
             try
             {
@@ -323,16 +326,19 @@ namespace EratosUoMBackend.Controllers
                     ResourceTable rscTable = Util.MAP_TO_TABLE(resource);
                     bool rscResponse = dc.CreateResource(rscTable);                    
                     int rscID = ((ResourceTable)dc.FindResource("EratosResourceID", rscTable.EratosResourceID)[0]).ResourceID;
+                    rollbackDBResourceID = rscID;
 
                     // Update Order
                     OrderTable orderTable = new OrderTable(0, float.Parse(price), "Pending", DateTime.Now.ToString(), userID, paymentID);
                     bool ordResponse = dc.CreateOrder(orderTable);                    
                     int ordID = ((OrderTable)dc.FindOrder("PaymentID", paymentID)[0]).OrderID;
+                    rollbackOrderID = ordID;
 
                     // Update Task
                     TaskTable taskTable = Util.MAP_TO_TABLE(taskResponse, userID, ordID, rscTable.Name);
                     bool taskSucceeded = dc.CreateTask(taskTable);                    
                     int taskID = ((TaskTable)dc.FindTask("EratosTaskID", taskTable.EratosTaskID)[0]).TaskID;
+                    rollbackDBTaskID = taskID;
 
                     // Update Association
                     bool associationResponse1 = dc.CreateResourceTaskAssociation(rscID, taskID);                    
@@ -342,6 +348,11 @@ namespace EratosUoMBackend.Controllers
                 {
                     try { orc.DeleteResource(rollbackResourceID); } catch { }
                     try { orc.RemoveTask(rollbackTaskID); } catch { }
+                    try { dc.DeleteResourceModuleAssociation(resourceID:rollbackDBResourceID); } catch { }
+                    try { dc.DeleteResourceTaskAssociation(taskID:rollbackDBTaskID); } catch { }
+                    try { dc.DeleteResource(rollbackDBResourceID); } catch { }
+                    try { dc.DeleteTask(rollbackDBResourceID); } catch { }
+                    try { dc.DeleteOrder(rollbackOrderID); } catch { }
                     dc.Disconnect();
                     return "{" + $"\"Success\":\"False\",\"Message\":\"Database error. {e.Message}\",\"TaskID\":\"{taskResponse.id}\",\"ResourceID\":\"{resource.id}\"" + "}";
                 }
@@ -352,6 +363,11 @@ namespace EratosUoMBackend.Controllers
             {
                 try { orc.DeleteResource(rollbackResourceID); } catch { }
                 try { orc.RemoveTask(rollbackTaskID); } catch { }
+                try { dc.DeleteResourceModuleAssociation(resourceID: rollbackDBResourceID); } catch { }
+                try { dc.DeleteResourceTaskAssociation(taskID: rollbackDBTaskID); } catch { }
+                try { dc.DeleteResource(rollbackDBResourceID); } catch { }
+                try { dc.DeleteTask(rollbackDBResourceID); } catch { }
+                try { dc.DeleteOrder(rollbackOrderID); } catch { }
                 dc.Disconnect();
                 return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Create task failed. {e.Message}\"" + "}";
             }
@@ -462,11 +478,7 @@ namespace EratosUoMBackend.Controllers
                     OutRequestController orc = new OutRequestController();
                     string deleteTask = orc.RemoveTask(taskTable.EratosTaskID);
                     string deleteResource = orc.DeleteResource(taskTable.Meta);
-                }catch(Exception e)
-                {
-                    dc.Disconnect();
-                    return "{" + $"\"Success\":\"False\",\"Message\":\"Error: Out request failed. {e.Message}\"" + "}";
-                }
+                }catch(Exception e) {  }
 
                 ResourceTable resourceTable = (ResourceTable)dc.FindResource("eratosresourceid", taskTable.Meta)[0];
                 dc.DeleteResourceModuleAssociation(resourceID:resourceTable.ResourceID);
