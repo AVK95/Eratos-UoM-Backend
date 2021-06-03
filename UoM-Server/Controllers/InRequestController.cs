@@ -143,6 +143,22 @@ namespace EratosUoMBackend.Controllers
             try
             {
                 dc.Connect();
+                //Get all tasks and orders made by the user
+                ArrayList tasksByUser = dc.FindTask("UserID", userID.ToString());
+                ArrayList ordersByUser = dc.FindOrder("UserID", userID.ToString());
+
+                //First delete all resource-task associations of this task, then tasks and orders
+                if (tasksByUser.Count > 0)
+                    foreach (TaskTable task in tasksByUser)
+                    {
+                        dc.DeleteResourceTaskAssociation(taskID: task.TaskID);
+                        dc.DeleteTask(task.TaskID);
+                    }
+
+                if (ordersByUser.Count > 0)
+                    foreach (OrderTable order in ordersByUser)
+                        dc.DeleteOrder(order.OrderID);                
+
                 dc.DeleteUser(userID);
             }
             catch (Exception e)
@@ -156,7 +172,7 @@ namespace EratosUoMBackend.Controllers
         #endregion
 
         #region Module
-        public string createModifyModule(string moduleName, string moduleSchema, string isActive)
+        public string createModifyModule(string moduleName, string moduleSchema, string isActive, string description)
         {
             DatabaseController dc = new DatabaseController();
             
@@ -166,7 +182,7 @@ namespace EratosUoMBackend.Controllers
                 ArrayList moduleList = dc.FindModule("moduleschema", moduleSchema);
                 if (moduleList.Count == 0)
                 {
-                    ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, bool.Parse(isActive));
+                    ModuleTable mod = new ModuleTable(0, moduleName, moduleSchema, bool.Parse(isActive), description);
                     bool resp = dc.CreateModule(mod);
 
                     if (!resp)
@@ -177,6 +193,7 @@ namespace EratosUoMBackend.Controllers
                     ModuleTable mod = (ModuleTable)moduleList[0];
                     if (mod.ModuleName != moduleName) dc.UpdateModule(mod.ModuleID, "modulename", moduleName);
                     if (mod.isActive != bool.Parse(isActive)) dc.UpdateModule(mod.ModuleID, "isActive", isActive);
+                    if (mod.Description != description) dc.UpdateModule(mod.ModuleID, "description", description);
                 }
             }
             catch (Exception e)
@@ -247,6 +264,7 @@ namespace EratosUoMBackend.Controllers
             try
             {
                 dc.Connect();
+                dc.DeleteResourceModuleAssociation(moduleID: moduleID);
                 dc.DeleteModule(moduleID);
             }
             catch (Exception e)

@@ -827,8 +827,8 @@ namespace EratosUoMBackend.Controllers
             if (!isConnected)
                 throw new EratosDBException("Disconnected from Database!");
 
-            string command = "INSERT INTO [dbo].[Module]([ModuleName], [ModuleSchema], [isActive]) ";
-            command += "VALUES(@ModuleName, @ModuleSchema, @isActive)";
+            string command = "INSERT INTO [dbo].[Module]([ModuleName], [ModuleSchema], [isActive], [Description) ";
+            command += "VALUES(@ModuleName, @ModuleSchema, @isActive, @Description)";
             try
             {
                 SqlCommand sql = new SqlCommand(command, connection);
@@ -843,6 +843,9 @@ namespace EratosUoMBackend.Controllers
 
                 sql.Parameters.Add("@isActive", SqlDbType.TinyInt);
                 sql.Parameters["@isActive"].Value = moduleDetails.isActive;
+
+                sql.Parameters.Add("@Description", SqlDbType.NVarChar);
+                sql.Parameters["@Description"].Value = moduleDetails.Description;
 
                 SqlDataReader result = sql.ExecuteReader();
                 result.Close();
@@ -898,6 +901,7 @@ namespace EratosUoMBackend.Controllers
                     else
                         entry.isActive = true;
 
+                    entry.Description = result.IsDBNull(4) ? null : result.GetString(4);
                     results.Add(entry);
                     entry = new ModuleTable();
                 }
@@ -952,6 +956,7 @@ namespace EratosUoMBackend.Controllers
                     else
                         entry.isActive = true;
 
+                    entry.Description = result.IsDBNull(4) ? null : result.GetString(4);
                     results.Add(entry);
                     entry = new ModuleTable();
                 }
@@ -983,6 +988,8 @@ namespace EratosUoMBackend.Controllers
                     tempBool = 0;
                 command += "[isActive] = " + "\'" + tempBool + "\'";
             }
+            else if (IdentifierType.ToLower().CompareTo("description") == 0)
+                command += "[Description] = " + "\'" + IdentifierValue + "\'";
             else
                 throw new EratosDBException("Invalid Parameter \'Identifier Type or Value\'");
             command += " WHERE ModuleID = " + "\'" + moduleID.ToString() + "\'";

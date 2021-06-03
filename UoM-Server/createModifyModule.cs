@@ -28,24 +28,26 @@ namespace EratosUoMBackend
                 string schema = req.Query["moduleSchema"];
                 string moduleName = req.Query["moduleName"];
                 string isActive = req.Query["isActive"];
+                string description = req.Query["Description"];
 
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
 
                 schema = schema ?? data?.moduleSchema;
-                moduleName = moduleName ?? data?.moduleSchema;
+                moduleName = moduleName ?? data?.moduleName;
                 isActive = isActive ?? data?.isActive;
+                description = description ?? data?.Description;
 
                 string responseMessage;
-                if (string.IsNullOrEmpty(schema) || string.IsNullOrEmpty(moduleName) || string.IsNullOrEmpty(isActive))
+                if (string.IsNullOrEmpty(schema) || string.IsNullOrEmpty(moduleName) || string.IsNullOrEmpty(isActive) || string.IsNullOrEmpty(description))
                 {
-                    responseMessage = "{" + "\"Success\": \"False\",\"Message\":\"Missing parameters. Parameters: schema, moduleName, isActive\"" + "}";
+                    responseMessage = "{" + "\"Success\": \"False\",\"Message\":\"Missing parameters. Parameters: moduleSchema, moduleName, isActive, Description\"" + "}";
                 }
                 else
                 {
                     // Functions to call eratos server
                     InRequestController irc = new InRequestController();
-                    responseMessage = await Task.Run(() => irc.createModifyModule(moduleName, schema, isActive));
+                    responseMessage = await Task.Run(() => irc.createModifyModule(moduleName, schema, isActive, description));
                 }
                 return new OkObjectResult(responseMessage);
             }

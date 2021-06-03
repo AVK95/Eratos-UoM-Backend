@@ -7,12 +7,15 @@
         public string ModuleSchema { get; set; }
         public bool isActive { get; set; }
 
-        public ModuleTable(int moduleID, string moduleName, string moduleSchema, bool isActive)
+        public string Description { get; set; }
+
+        public ModuleTable(int moduleID, string moduleName, string moduleSchema, bool isActive, string description)
         {
             ModuleID = moduleID;
             ModuleName = moduleName;
             ModuleSchema = moduleSchema;
             this.isActive = isActive;
+            Description = description;
         }
     }
 }
