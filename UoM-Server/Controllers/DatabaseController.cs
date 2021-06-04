@@ -827,7 +827,7 @@ namespace EratosUoMBackend.Controllers
             if (!isConnected)
                 throw new EratosDBException("Disconnected from Database!");
 
-            string command = "INSERT INTO [dbo].[Module]([ModuleName], [ModuleSchema], [isActive], [Description) ";
+            string command = "INSERT INTO [dbo].[Module]([ModuleName], [ModuleSchema], [isActive], [Description]) ";
             command += "VALUES(@ModuleName, @ModuleSchema, @isActive, @Description)";
             try
             {
