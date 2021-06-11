@@ -195,16 +195,22 @@ namespace EratosUoMBackend.Controllers
                         {
                             GNTaskResponse task = GetTask(taskTable.EratosTaskID);
                             dc.UpdateTask(taskTable.TaskID, "State", task.state);
-                            dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt);
+                            dc.UpdateTask(taskTable.TaskID, "LastUpdatedAt", task.lastUpdatedAt); ;
                             if (task.state == "Complete" || task.state == "Error")
                             {
                                 dc.UpdateTask(taskTable.TaskID, "EndedAt", task.endedAt);
                                 dc.UpdateOrder(taskTable.OrderID, "Status", task.state);
-                                // Update the policy
-                                UserTable userTable = (UserTable)dc.FindUser("UserID", taskTable.UserID.ToString())[0];
-                                ResourceTable rscTable = (ResourceTable)dc.FindResource("EratosResourceID", taskTable.Meta)[0];
-                                ResourcePolicy rscPolicy = GetPolicy(rscTable.Policy);
-                                string policyResponse = AddUserToPolicy(rscPolicy, userTable.EratosUserID);
+
+                                // Update the policy if possible
+                                ArrayList userList = dc.FindUser("UserID", taskTable.UserID.ToString());
+                                ArrayList resourceList = dc.FindResource("EratosResourceID", taskTable.Meta);
+                                if ((userList.Count > 0) && (resourceList.Count > 0))
+                                {
+                                    UserTable userTable = (UserTable)userList[0];
+                                    ResourceTable rscTable = (ResourceTable)resourceList[0];
+                                    ResourcePolicy rscPolicy = GetPolicy(rscTable.Policy);
+                                    string policyResponse = AddUserToPolicy(rscPolicy, userTable.EratosUserID);
+                                }                                
                             }
                         }
                     }

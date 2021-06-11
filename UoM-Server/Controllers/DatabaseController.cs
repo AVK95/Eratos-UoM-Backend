@@ -175,7 +175,7 @@ namespace EratosUoMBackend.Controllers
                     entry.Email = result.GetString(2);
                     entry.Name = result.GetString(3);
                     entry.Auth0ID = result.GetString(4);
-                    entry.CreatedAt = result.IsDBNull(5) ? null : result.GetDateTime(5).ToString();
+                    entry.CreatedAt = result.IsDBNull(5) ? null : result.GetString(5);
                     entry.Info = result.IsDBNull(6) ? null : result.GetString(6);
                     if (result.GetByte(7) == 0)
                         entry.isAdmin = false;
@@ -233,7 +233,7 @@ namespace EratosUoMBackend.Controllers
                     entry.Email = result.GetString(2);
                     entry.Name = result.GetString(3);
                     entry.Auth0ID = result.GetString(4);
-                    entry.CreatedAt = result.IsDBNull(5) ? null : result.GetDateTime(5).ToString();
+                    entry.CreatedAt = result.IsDBNull(5) ? null : result.GetString(5);
                     entry.Info = result.IsDBNull(6) ? null : result.GetString(6);
                     if (result.GetByte(7) == 0)
                         entry.isAdmin = false;
@@ -401,7 +401,7 @@ namespace EratosUoMBackend.Controllers
                     entry.OrderID = result.GetInt32(0);
                     entry.Price = (float)result.GetDouble(1);
                     entry.Status = result.IsDBNull(2) ? null : result.GetString(2);
-                    entry.OrderTime = result.GetDateTime(3).ToString();
+                    entry.OrderTime = result.GetString(3);
                     entry.UserID = result.GetInt32(4);
                     entry.PaymentID = result.IsDBNull(5) ? null : result.GetString(5);
 
@@ -453,7 +453,7 @@ namespace EratosUoMBackend.Controllers
                     entry.OrderID = result.GetInt32(0);
                     entry.Price = (float)result.GetDouble(1);
                     entry.Status = result.IsDBNull(2) ? null : result.GetString(2);
-                    entry.OrderTime = result.GetDateTime(3).ToString();
+                    entry.OrderTime = result.GetString(3);
                     entry.UserID = result.GetInt32(4);
                     entry.PaymentID = result.IsDBNull(5) ? null : result.GetString(5);
 
@@ -656,10 +656,10 @@ namespace EratosUoMBackend.Controllers
                 while (result.Read())
                 {
                     entry.TaskID = result.GetInt32(0);
-                    entry.CreatedAt = result.IsDBNull(1) ? null : result.GetDateTime(1).ToString();
-                    entry.LastUpdatedAt = result.IsDBNull(2) ? null : result.GetDateTime(2).ToString();
-                    entry.StartedAt = result.IsDBNull(3) ? null : result.GetDateTime(3).ToString();
-                    entry.EndedAt = result.IsDBNull(4) ? null : result.GetDateTime(4).ToString();
+                    entry.CreatedAt = result.IsDBNull(1) ? null : result.GetString(1);
+                    entry.LastUpdatedAt = result.IsDBNull(2) ? null : result.GetString(2);
+                    entry.StartedAt = result.IsDBNull(3) ? null : result.GetString(3);
+                    entry.EndedAt = result.IsDBNull(4) ? null : result.GetString(4);
                     entry.Priority = result.IsDBNull(5) ? null : result.GetString(5);
                     entry.State = result.IsDBNull(6) ? null : result.GetString(6);
                     entry.Type = result.IsDBNull(7) ? null : result.GetString(7);
@@ -716,10 +716,10 @@ namespace EratosUoMBackend.Controllers
                 while (result.Read())
                 {
                     entry.TaskID = result.GetInt32(0);
-                    entry.CreatedAt = result.IsDBNull(1) ? null : result.GetDateTime(1).ToString();
-                    entry.LastUpdatedAt = result.IsDBNull(2) ? null : result.GetDateTime(2).ToString();
-                    entry.StartedAt = result.IsDBNull(3) ? null : result.GetDateTime(3).ToString();
-                    entry.EndedAt = result.IsDBNull(4) ? null : result.GetDateTime(4).ToString();
+                    entry.CreatedAt = result.IsDBNull(1) ? null : result.GetString(1);
+                    entry.LastUpdatedAt = result.IsDBNull(2) ? null : result.GetString(2);
+                    entry.StartedAt = result.IsDBNull(3) ? null : result.GetString(3);
+                    entry.EndedAt = result.IsDBNull(4) ? null : result.GetString(4);
                     entry.Priority = result.IsDBNull(5) ? null : result.GetString(5);
                     entry.State = result.IsDBNull(6) ? null : result.GetString(6);
                     entry.Type = result.IsDBNull(7) ? null : result.GetString(7);
@@ -1125,7 +1125,7 @@ namespace EratosUoMBackend.Controllers
                 {
                     entry.ResourceID = result.GetInt32(0);
                     entry.EratosResourceID = result.GetString(1);
-                    entry.Date = result.IsDBNull(2) ? null : result.GetDateTime(2).ToString();
+                    entry.Date = result.IsDBNull(2) ? null : result.GetString(2);
                     entry.Policy = result.IsDBNull(3) ? null : result.GetString(3);
                     entry.Geo = result.IsDBNull(4) ? null : result.GetString(4);
                     entry.Meta = result.IsDBNull(5) ? null : result.GetString(5);
@@ -1179,7 +1179,7 @@ namespace EratosUoMBackend.Controllers
                 {
                     entry.ResourceID = result.GetInt32(0);
                     entry.EratosResourceID = result.GetString(1);
-                    entry.Date = result.IsDBNull(2) ? null : result.GetDateTime(2).ToString();
+                    entry.Date = result.IsDBNull(2) ? null : result.GetString(2);
                     entry.Policy = result.IsDBNull(3) ? null : result.GetString(3);
                     entry.Geo = result.IsDBNull(4) ? null : result.GetString(4);
                     entry.Meta = result.IsDBNull(5) ? null : result.GetString(5);
