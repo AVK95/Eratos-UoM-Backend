@@ -11,9 +11,7 @@ namespace EratosUoMBackend
     class syncTasksAndOrders
     {
         [FunctionName("syncTasksAndOrders")]
-        public static async Task<IActionResult> Run(
-           [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
-           ILogger log)
+        public static async void Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger log)
         {
             try
             {
@@ -23,13 +21,12 @@ namespace EratosUoMBackend
 
                 InRequestController irc = new InRequestController();
                 responseMessage = await Task.Run(() => irc.syncTasksAndOrders());
-
-                return new OkObjectResult(responseMessage);
+                log.LogInformation("Syncing occured successfully at " + System.DateTime.Now);                
             }
             catch
             {
                 string responseMessage = "Server error. Please contact the administrator.";
-                return new BadRequestObjectResult(responseMessage);
+                log.LogWarning(responseMessage);
             }
         }
     }
