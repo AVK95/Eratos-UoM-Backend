@@ -1,17 +1,22 @@
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using EratosUoMBackend.Controllers;
+using Newtonsoft.Json;
+using UoM_Server.Models;
+using UoM_Server.Controllers;
 
-namespace EratosUoMBackend
+namespace UoM_Server.API
 {
-    class syncTasksAndOrders
+    class forceSync
     {
-        [FunctionName("syncTasksAndOrders")]
-        public static async void Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger log)
+        [FunctionName("forceSync")]
+        public static async Task<IActionResult> Run(
+           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+           ILogger log)
         {
             try
             {
@@ -21,13 +26,15 @@ namespace EratosUoMBackend
 
                 InRequestController irc = new InRequestController();
                 responseMessage = await Task.Run(() => irc.syncTasksAndOrders());
-                log.LogInformation("Syncing occured successfully at " + System.DateTime.Now);                
+
+                return new OkObjectResult(responseMessage);
             }
             catch
             {
                 string responseMessage = "Server error. Please contact the administrator.";
-                log.LogWarning(responseMessage);
+                return new BadRequestObjectResult(responseMessage);
             }
+
         }
     }
 }
