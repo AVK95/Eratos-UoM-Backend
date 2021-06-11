@@ -151,8 +151,8 @@ namespace EratosUoMBackend.Controllers
                 if (tasksByUser.Count > 0)
                     foreach (TaskTable task in tasksByUser)
                     {
-                        dc.DeleteResourceTaskAssociation(taskID: task.TaskID);
-                        dc.DeleteTask(task.TaskID);
+                        try { dc.DeleteResourceTaskAssociation(taskID: task.TaskID); } catch { }
+                        try { dc.DeleteTask(task.TaskID); } catch { }
                     }
 
                 if (ordersByUser.Count > 0)
@@ -264,7 +264,7 @@ namespace EratosUoMBackend.Controllers
             try
             {
                 dc.Connect();
-                dc.DeleteResourceModuleAssociation(moduleID: moduleID);
+                try { dc.DeleteResourceModuleAssociation(moduleID: moduleID); } catch { }
                 dc.DeleteModule(moduleID);
             }
             catch (Exception e)
@@ -491,24 +491,29 @@ namespace EratosUoMBackend.Controllers
             {
                 dc.Connect();
                 TaskTable taskTable = (TaskTable)dc.FindTask("taskID", taskID.ToString())[0];
-
+                OutRequestController orc = new OutRequestController();
                 try
                 {
-                    OutRequestController orc = new OutRequestController();
                     string deleteTask = orc.RemoveTask(taskTable.EratosTaskID);
-                    string deleteResource = orc.DeleteResource(taskTable.Meta);
-                    additionalMessage = "Data removed from Eratos server.";
+                    additionalMessage += "Task data removed from Eratos server.";
                 }
                 catch(Exception e) {
-                    additionalMessage = "Counld not find data in Eratos server. Perhaps already removed.";
+                    additionalMessage += "Counld not find task data in Eratos server. Perhaps already removed.";
+                }
+                try { 
+                    string deleteResource = orc.DeleteResource(taskTable.Meta);
+                    additionalMessage += "Resource Data removed from Eratos server.";
+                } 
+                catch {
+                    additionalMessage += "Counld not find resource data in Eratos server. Perhaps already removed.";
                 }
 
                 ResourceTable resourceTable = (ResourceTable)dc.FindResource("eratosresourceid", taskTable.Meta)[0];
-                dc.DeleteResourceModuleAssociation(resourceID:resourceTable.ResourceID);
-                dc.DeleteResourceTaskAssociation(taskID: taskTable.TaskID);
-                dc.DeleteTask(taskTable.TaskID);
-                dc.DeleteResource(resourceTable.ResourceID);
-                dc.UpdateOrder(taskTable.OrderID, "status", "Deleted");
+                try { dc.DeleteResourceModuleAssociation(resourceID: resourceTable.ResourceID); } catch { }
+                try { dc.DeleteResourceTaskAssociation(taskID: taskTable.TaskID); } catch { }
+                dc.DeleteTask(taskTable.TaskID); 
+                try { dc.DeleteResource(resourceTable.ResourceID); } catch { }
+                try { dc.UpdateOrder(taskTable.OrderID, "status", "Deleted"); } catch { }
                 OrderTable orderTable = (OrderTable)dc.FindOrder("orderid", taskTable.OrderID.ToString())[0];
                 orderInfo = Util.WriteObjToJSON(orderTable);
             }
